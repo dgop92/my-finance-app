@@ -7,7 +7,3 @@ export * from "./entities/expense";
 // Repository exports
 export * from "./repositories/savings-source.repository";
 export * from "./repositories/financial-record.repository";
-export * from "./repositories/expense.repository";
-
-// Utility exports
-export * from "./utils/financial-calculator";
