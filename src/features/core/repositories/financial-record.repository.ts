@@ -38,7 +38,6 @@ export class FinancialRecordRepository implements IFinancialRecordRepository {
         { id }
       );
     }
-    console.log("Found record:", record);
     return Promise.resolve(record);
   }
 
@@ -132,9 +131,6 @@ export class FinancialRecordRepository implements IFinancialRecordRepository {
     }
     const current = sortedRecords[currentIndex];
     const previous = sortedRecords[currentIndex + 1];
-
-    console.log("Current record:", current);
-    console.log("Previous record:", previous);
 
     return Promise.resolve({ current, previous });
   }
