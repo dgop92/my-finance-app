@@ -78,9 +78,9 @@ Views and calculations to analyze financial data over time.
 ### Acceptance Criteria
 
 - [x] The system includes a predefined "NA" savings source that cannot be deleted
-- [ ] When a savings source is deleted, its value is automatically transferred to the "NA" source
-- [ ] The "NA" source appears in all financial records
-- [ ] The "NA" source is clearly labeled as a special source for unclassified money
+- [x] When a savings source is deleted, its value is automatically transferred to the "NA" source
+- [x] The "NA" source appears in all financial records
+- [x] The "NA" source is clearly labeled as a special source for unclassified money
 
 ---
 
@@ -109,7 +109,7 @@ Views and calculations to analyze financial data over time.
 - [x] Users can modify the name of the selected savings source
 - [x] System validates that the name is not empty and its length is less than 100 characters
 - [x] Changes are saved when submitted
-- [ ] The saving source used is updated across all financial records
+- [x] The saving source used is updated across all financial records
 - [x] User cannot update the "NA" savings source
 - [ ] Confirmation is shown when a savings source is updated
 
@@ -138,9 +138,9 @@ Views and calculations to analyze financial data over time.
 
 - [x] Users can select an existing savings source to delete
 - [x] System shows a confirmation dialog before deletion
-- [ ] When confirmed, system transfers any associated values to the "NA" savings source
+- [x] When confirmed, system transfers any associated values to the "NA" savings source
 - [x] The deleted savings source no longer appears in the list
-- [ ] The saving source stops appearing in all financial records
+- [x] The saving source stops appearing in all financial records
 - [ ] Confirmation is shown when a savings source is deleted
 
 ---
@@ -254,6 +254,30 @@ Views and calculations to analyze financial data over time.
 **I want** to update an existing financial record  
 **So that** I can correct errors or update values as needed
 
+---
+
+### Acceptance Criteria
+
+- [x] Users can select an existing financial record to edit
+- [x] Users can modify the values for each savings source
+- [x] The system updates the "updated at" timestamp automatically
+- [x] The system recalculates the total sum after modifications
+- [x] Changes are saved when submitted
+- [ ] Confirmation is shown when a financial record is updated
+
+---
+
+### Definition of Done
+
+- Code implemented
+- Unit tests written & passed
+- UI elements created and responsive
+- Meets acceptance criteria
+- Reviewed & merged
+- Deployed to staging/production
+
+---
+
 #### US009: Delete Financial Record
 
 **As a** user  
@@ -281,31 +305,9 @@ Views and calculations to analyze financial data over time.
 
 ---
 
-### Acceptance Criteria
-
-- [x] Users can select an existing financial record to edit
-- [x] Users can modify the values for each savings source
-- [x] The system updates the "updated at" timestamp automatically
-- [x] The system recalculates the total sum after modifications
-- [x] Changes are saved when submitted
-- [ ] Confirmation is shown when a financial record is updated
-
----
-
-### Definition of Done
-
-- Code implemented
-- Unit tests written & passed
-- UI elements created and responsive
-- Meets acceptance criteria
-- Reviewed & merged
-- Deployed to staging/production
-
----
-
 ### Epic: EP003 - Expense Tracking
 
-#### US009: Add Relevant Expenses to Financial Record
+#### US309: Add Relevant Expenses to Financial Record
 
 **As a** user  
 **I want** to add relevant expenses to a financial record  
@@ -315,9 +317,9 @@ Views and calculations to analyze financial data over time.
 
 ### Acceptance Criteria
 
-- [ ] Users can add one or more relevant expenses to a financial record
-- [ ] For each expense, users can enter a name and price in COP
-- [ ] Expenses are saved with the financial record
+- [x] Users can add one or more relevant expenses to a financial record
+- [x] For each expense, users can enter a name and price in COP
+- [x] Expenses are saved with the financial record
 - [ ] Confirmation is shown when expenses are added
 
 ---
@@ -333,7 +335,7 @@ Views and calculations to analyze financial data over time.
 
 ---
 
-#### US010: View Relevant Expenses
+#### US310: View Relevant Expenses
 
 **As a** user  
 **I want** to view all relevant expenses for a financial record  
@@ -343,10 +345,10 @@ Views and calculations to analyze financial data over time.
 
 ### Acceptance Criteria
 
-- [ ] Users can view a list of all relevant expenses within a financial record
-- [ ] Each expense displays its name and price in COP
-- [ ] The expenses are clearly associated with the specific financial record
-- [ ] The list is visually clear and readable
+- [x] Users can view a list of all relevant expenses within a financial record
+- [x] Each expense displays its name and price in COP
+- [x] The expenses are clearly associated with the specific financial record
+- [x] The list is visually clear and readable
 
 ---
 
@@ -361,7 +363,7 @@ Views and calculations to analyze financial data over time.
 
 ---
 
-#### US011: Edit or Remove Relevant Expenses
+#### US311: Edit or Remove Relevant Expenses
 
 **As a** user  
 **I want** to edit or remove expenses from a financial record  
@@ -371,10 +373,10 @@ Views and calculations to analyze financial data over time.
 
 ### Acceptance Criteria
 
-- [ ] Users can select an existing expense to edit
-- [ ] Users can modify the name and price of an expense
-- [ ] Users can delete an expense
-- [ ] Changes are saved when submitted
+- [x] Users can select an existing expense to edit
+- [x] Users can modify the name and price of an expense
+- [x] Users can delete an expense
+- [x] Changes are saved when submitted
 - [ ] Confirmation is shown when an expense is updated or removed
 
 ---

@@ -2,7 +2,6 @@ import { z } from "zod";
 
 export interface Expense {
   id: string;
-  financialRecordId: string;
   name: string;
   amount: number;
   createdAt: Date;

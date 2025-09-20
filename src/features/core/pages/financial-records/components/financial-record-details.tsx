@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ArrowLeft, Edit, Plus } from "lucide-react";
 import { formatCurrency, formatDate, formatChange } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +12,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useFinancialRecordDetails } from "../hooks/financial-record-details-hook";
+import { useExpenses } from "../hooks/expenses-hook";
 import { calculateTotal } from "../../../services/financial-functions";
+import { AddExpenseDialog } from "./add-expense-dialog";
+import { EditExpenseDialog } from "./edit-expense-dialog";
+import { DeleteExpenseDialog } from "./delete-expense-dialog";
+import { ExpensesList } from "./expenses-list";
 
 const FinancialRecordDetails = () => {
   // Get record ID from URL params
@@ -276,7 +281,98 @@ const FinancialRecordDetails = () => {
         </CardContent>
       </Card>
 
-      {/* Expenses section would go here when implemented */}
+      {/* Expenses Section */}
+      <Card className="mt-8">
+        <ExpensesSection recordId={record.id} />
+      </Card>
+    </div>
+  );
+};
+
+// Separate component for expenses to keep the main component cleaner
+const ExpensesSection: React.FC<{ recordId: string }> = ({ recordId }) => {
+  const {
+    expenses,
+    isLoading: isLoadingExpenses,
+    error: expensesError,
+    // Add dialog
+    isAddDialogOpen,
+    setIsAddDialogOpen,
+    openAddDialog,
+    addExpense,
+    isAddingExpense,
+    // Edit dialog
+    isEditDialogOpen,
+    setIsEditDialogOpen,
+    openEditDialog,
+    selectedExpense,
+    updateExpense,
+    isUpdatingExpense,
+    // Delete dialog
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    openDeleteDialog,
+    selectedExpenseName,
+    deleteExpense,
+    isDeletingExpense,
+  } = useExpenses(recordId);
+
+  if (isLoadingExpenses) {
+    return <div className="p-4">Loading expenses...</div>;
+  }
+
+  if (expensesError) {
+    return <div className="p-4 text-red-500">Error loading expenses</div>;
+  }
+
+  return (
+    <div className="w-full">
+      <div className="flex justify-end mb-4">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between w-full">
+          <CardTitle className="text-lg">Relevant Expenses</CardTitle>
+          <Button onClick={openAddDialog} className="flex items-center gap-1">
+            <Plus className="h-4 w-4" />
+            Add Expense
+          </Button>
+        </CardHeader>
+      </div>
+
+      <CardContent className="p-0">
+        <ExpensesList
+          expenses={expenses}
+          onEdit={openEditDialog}
+          onDelete={openDeleteDialog}
+        />
+      </CardContent>
+
+      {/* Dialogs for adding, editing, and deleting expenses */}
+      <AddExpenseDialog
+        open={isAddDialogOpen}
+        onOpenChange={setIsAddDialogOpen}
+        onSubmit={addExpense}
+        isLoading={isAddingExpense}
+      />
+
+      {selectedExpense && (
+        <EditExpenseDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSubmit={updateExpense}
+          isLoading={isUpdatingExpense}
+          initialData={{
+            name: selectedExpense.name,
+            amount: selectedExpense.amount,
+          }}
+        />
+      )}
+
+      <DeleteExpenseDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={deleteExpense}
+        isLoading={isDeletingExpense}
+        expenseName={selectedExpenseName}
+      />
     </div>
   );
 };
