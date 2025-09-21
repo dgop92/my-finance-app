@@ -9,4 +9,5 @@ export const PATHS = {
   FINANCIAL_RECORD_CREATE: "/financial-records/create",
   FINANCIAL_RECORD_EDIT: "/financial-records/:id/edit",
   ANALYSIS: "/analysis",
+  IMPORT_EXPORT: "/import-export",
 };

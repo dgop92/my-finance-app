@@ -11,6 +11,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { FinancialRecordDetailPage } from "./features/core/pages/financial-records/financial-records-detail-page";
 import { FinancialRecordCreatePage } from "./features/core/pages/financial-records/financial-records-create-page";
 import { FinancialRecordsEditPage } from "./features/core/pages/financial-records/financial-records-edit-page";
+import { ImportExportPage } from "./features/core/pages/import-export/import-export-page";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ function App() {
               element={<FinancialRecordsEditPage />}
             />
             <Route path={PATHS.ANALYSIS} element={<Analysis />} />
+            <Route path={PATHS.IMPORT_EXPORT} element={<ImportExportPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

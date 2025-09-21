@@ -18,7 +18,7 @@ function initializeSavingSources() {
 }
 
 // Helper function to convert date strings to Date objects in SavingsSource objects
-function convertSavingsSourceDates(source: any): SavingsSource {
+export function convertSavingsSourceDates(source: any): SavingsSource {
   return {
     ...source,
     createdAt: new Date(source.createdAt),
@@ -27,7 +27,7 @@ function convertSavingsSourceDates(source: any): SavingsSource {
 }
 
 // Helper function to convert date strings to Date objects in FinancialRecord objects
-function convertFinancialRecordDates(record: any): FinancialRecord {
+export function convertFinancialRecordDates(record: any): FinancialRecord {
   return {
     ...record,
     createdAt: new Date(record.createdAt),
