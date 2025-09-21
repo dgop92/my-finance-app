@@ -1,4 +1,10 @@
-import { CircleDollarSign, BarChart3, History, PiggyBank } from "lucide-react";
+import {
+  CircleDollarSign,
+  BarChart3,
+  History,
+  PiggyBank,
+  FileJson,
+} from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -27,5 +33,10 @@ export const navigationItems: NavigationItem[] = [
     name: "Analysis & Reports",
     path: PATHS.ANALYSIS,
     icon: BarChart3,
+  },
+  {
+    name: "Import / Export",
+    path: PATHS.IMPORT_EXPORT,
+    icon: FileJson,
   },
 ];
