@@ -1,4 +1,4 @@
-import { ArrowLeftRight, DatabaseBackup, LayoutDashboard, Wallet } from "lucide-react";
+import { ArrowLeftRight, DatabaseBackup, LayoutDashboard, ListChecks, Wallet } from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -28,4 +28,9 @@ export const navigationItems: NavigationItem[] = [
     path: PATHS.DATA_TRANSFER,
     icon: DatabaseBackup,
   },
+  {
+    name: "Batch mode",
+    path: PATHS.BATCH_MODE,
+    icon: ListChecks,
+  }
 ];
