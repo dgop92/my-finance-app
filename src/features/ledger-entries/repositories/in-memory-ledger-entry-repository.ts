@@ -55,6 +55,11 @@ export class InMemoryLedgerEntryRepository implements LedgerEntryRepository {
     this.entries = this.entries.filter((entry) => entry.id !== id);
   }
 
+  replaceAll(entries: LedgerEntry[]): Promise<void> {
+    this.entries = [...entries];
+    return Promise.resolve();
+  }
+
   private findOrThrow(id: string): LedgerEntry {
     const entry = this.entries.find((entry) => entry.id === id);
     if (!entry) {

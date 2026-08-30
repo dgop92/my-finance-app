@@ -67,6 +67,10 @@ export class AccountLocalStorageRepository implements AccountRepository {
     return updated;
   }
 
+  async replaceAll(accounts: Account[]): Promise<void> {
+    saveAccounts(accounts);
+  }
+
   private findIndexOrThrow(accounts: Account[], id: string): number {
     const index = accounts.findIndex((account) => account.id === id);
     if (index === -1) {

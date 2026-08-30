@@ -6,3 +6,4 @@ export * from "./entities/ledger-entry";
 export * from "./services/ledger-balance";
 export * from "./services/ledger-batch-diff";
 export * from "./services/ledger-entry-label";
+export * from "./services/ledger-data-payload";
