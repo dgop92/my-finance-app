@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Wallet } from "lucide-react";
+import { ArrowLeftRight, LayoutDashboard, Wallet } from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -8,6 +8,11 @@ export type NavigationItem = {
 };
 
 export const navigationItems: NavigationItem[] = [
+  {
+    name: "Dashboard",
+    path: PATHS.HOME,
+    icon: LayoutDashboard,
+  },
   {
     name: "Accounts",
     path: PATHS.ACCOUNTS,
