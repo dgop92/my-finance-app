@@ -9,4 +9,5 @@ export interface AccountRepository {
   create(input: CreateAccountInput): Promise<Account>;
   update(id: string, input: Pick<UpdateAccountInput, "name">): Promise<Account>;
   archive(id: string): Promise<Account>;
+  replaceAll(accounts: Account[]): Promise<void>;
 }

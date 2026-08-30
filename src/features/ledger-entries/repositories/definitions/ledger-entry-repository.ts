@@ -13,4 +13,5 @@ export interface LedgerEntryRepository {
   create(input: CreateLedgerEntryInput): Promise<LedgerEntry>;
   update(id: string, input: UpdateLedgerEntryInput): Promise<LedgerEntry>;
   delete(id: string): Promise<void>;
+  replaceAll(entries: LedgerEntry[]): Promise<void>;
 }

@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/layout";
 import { NotFound } from "@/components/layout/not-found";
 import { AccountsPage } from "@/features/accounts/pages/accounts-page";
 import { LedgerEntriesPage } from "@/features/ledger-entries/pages/entries-page";
+import { DataTransferPage } from "@/features/data-transfer/pages/data-transfer-page";
 import { PATHS } from "@/lib/paths";
 
 const queryClient = new QueryClient();
@@ -17,6 +18,7 @@ function App() {
             <Route path="/" element={<Navigate to={PATHS.ACCOUNTS} replace />} />
             <Route path={PATHS.ACCOUNTS} element={<AccountsPage />} />
             <Route path={PATHS.LEDGER_ENTRIES} element={<LedgerEntriesPage />} />
+            <Route path={PATHS.DATA_TRANSFER} element={<DataTransferPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
