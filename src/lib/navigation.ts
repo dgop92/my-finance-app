@@ -1,4 +1,4 @@
-import { ArrowLeftRight, LayoutDashboard, Wallet } from "lucide-react";
+import { ArrowLeftRight, DatabaseBackup, LayoutDashboard, Wallet } from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -22,5 +22,10 @@ export const navigationItems: NavigationItem[] = [
     name: "Entries",
     path: PATHS.LEDGER_ENTRIES,
     icon: ArrowLeftRight,
+  },
+  {
+    name: "Import / Export",
+    path: PATHS.DATA_TRANSFER,
+    icon: DatabaseBackup,
   },
 ];
