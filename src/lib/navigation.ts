@@ -1,4 +1,4 @@
-import { Wallet } from "lucide-react";
+import { ArrowLeftRight, Wallet } from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -12,5 +12,10 @@ export const navigationItems: NavigationItem[] = [
     name: "Accounts",
     path: PATHS.ACCOUNTS,
     icon: Wallet,
+  },
+  {
+    name: "Entries",
+    path: PATHS.LEDGER_ENTRIES,
+    icon: ArrowLeftRight,
   },
 ];

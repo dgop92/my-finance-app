@@ -9,6 +9,7 @@ function makeEntry(overrides: Partial<LedgerEntry>): LedgerEntry {
     accountId: "account-1",
     type: "debit",
     amount: 100,
+    date: new Date(),
     ...overrides,
   };
 }

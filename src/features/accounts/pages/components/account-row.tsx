@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Account } from "@/features/core/entities/account";
-import { computeAccountBalance } from "@/features/core/services/ledger-balance";
 import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,18 +9,16 @@ import { useArchiveAccount } from "../hooks/use-archive-account";
 
 interface AccountRowProps {
   account: Account;
+  balance: number;
 }
 
-export const AccountRow = ({ account }: AccountRowProps) => {
+export const AccountRow = ({ account, balance }: AccountRowProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
   const { register, handleFormSubmit, formState } = useRenameAccount({
     account,
     onDone: () => setIsRenaming(false),
   });
   const { archive, isPending, error } = useArchiveAccount();
-
-  // No feature persists ledger entries yet, so every account's balance is 0.
-  const balance = computeAccountBalance([]);
 
   if (isRenaming) {
     return (
