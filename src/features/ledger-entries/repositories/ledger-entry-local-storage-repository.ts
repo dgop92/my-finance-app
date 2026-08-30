@@ -57,6 +57,10 @@ export class LedgerEntryLocalStorageRepository implements LedgerEntryRepository 
     saveLedgerEntries(entries.filter((entry) => entry.id !== id));
   }
 
+  async replaceAll(entries: LedgerEntry[]): Promise<void> {
+    saveLedgerEntries(entries);
+  }
+
   private findIndexOrThrow(entries: LedgerEntry[], id: string): number {
     const index = entries.findIndex((entry) => entry.id === id);
     if (index === -1) {

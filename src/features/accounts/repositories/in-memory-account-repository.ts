@@ -54,6 +54,11 @@ export class InMemoryAccountRepository implements AccountRepository {
     return account;
   }
 
+  replaceAll(accounts: Account[]): Promise<void> {
+    this.accounts = [...accounts];
+    return Promise.resolve();
+  }
+
   private findOrThrow(id: string): Account {
     const account = this.accounts.find((account) => account.id === id);
     if (!account) {
