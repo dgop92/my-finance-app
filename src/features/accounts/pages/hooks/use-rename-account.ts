@@ -1,12 +1,14 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  Account,
-  CreateAccountInput,
-  CreateAccountInputSchema,
-} from "@/features/core/entities/account";
+import { z } from "zod";
+import { Account, UpdateAccountInputSchema } from "@/features/core/entities/account";
 import { accountRepository } from "@/features/accounts/repositories/repository.factory";
+
+// The rename form always submits a name, unlike UpdateAccountInputSchema's
+// optional `name` (which also covers archiving), so pick and require it.
+const RenameAccountInputSchema = UpdateAccountInputSchema.pick({ name: true }).required();
+type RenameAccountInput = z.infer<typeof RenameAccountInputSchema>;
 
 export interface UseRenameAccountArgs {
   account: Account;
@@ -16,7 +18,7 @@ export interface UseRenameAccountArgs {
 export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (input: CreateAccountInput) =>
+    mutationFn: (input: RenameAccountInput) =>
       accountRepository.update(account.id, { name: input.name }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
@@ -28,8 +30,8 @@ export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CreateAccountInput>({
-    resolver: zodResolver(CreateAccountInputSchema),
+  } = useForm<RenameAccountInput>({
+    resolver: zodResolver(RenameAccountInputSchema),
     defaultValues: { name: account.name },
   });
 

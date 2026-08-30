@@ -5,7 +5,7 @@ import { navigationItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const Header = () => {
+export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleMobileMenuToggle = () => {
@@ -85,5 +85,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

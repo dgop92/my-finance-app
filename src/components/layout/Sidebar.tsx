@@ -2,7 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { navigationItems } from "@/lib/navigation";
 
-const Sidebar = () => {
+export const Sidebar = () => {
   const location = useLocation();
 
   return (
@@ -36,5 +36,3 @@ const Sidebar = () => {
     </aside>
   );
 };
-
-export default Sidebar;
