@@ -55,14 +55,21 @@ export const LedgerEntryFormFields = ({
 
       <div className="grid gap-1.5">
         <Label htmlFor={`${idPrefix}-type`}>Type</Label>
-        <select
-          id={`${idPrefix}-type`}
-          {...register("label")}
-          className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-        >
-          <option value="Deposit">Deposit</option>
-          <option value="Withdrawal">Withdrawal</option>
-        </select>
+        <Controller
+          name="label"
+          control={control}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger id={`${idPrefix}-type`}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Deposit">Deposit</SelectItem>
+                <SelectItem value="Withdrawal">Withdrawal</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
 
       <div className="grid gap-1.5">
