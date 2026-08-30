@@ -1,7 +1,7 @@
 import { LedgerEntry } from "../entities/ledger-entry";
 
-// No feature writes ledger entries yet (a future ticket owns that), but the
-// key is shared now so account balance derivation has a stable source to read.
+// Storage key shared across features: the ledger-entries feature owns writes,
+// while accounts reads through here to derive balances.
 const LEDGER_ENTRIES_STORAGE_KEY = "financeApp:ledgerEntries";
 
 export function loadLedgerEntries(): LedgerEntry[] {
@@ -10,5 +10,13 @@ export function loadLedgerEntries(): LedgerEntry[] {
     return [];
   }
   const parsed = JSON.parse(raw) as LedgerEntry[];
-  return parsed.map((entry) => ({ ...entry, createdAt: new Date(entry.createdAt) }));
+  return parsed.map((entry) => ({
+    ...entry,
+    createdAt: new Date(entry.createdAt),
+    date: new Date(entry.date),
+  }));
+}
+
+export function saveLedgerEntries(entries: LedgerEntry[]): void {
+  localStorage.setItem(LEDGER_ENTRIES_STORAGE_KEY, JSON.stringify(entries));
 }
