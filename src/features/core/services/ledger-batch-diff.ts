@@ -7,7 +7,8 @@ export interface AccountWithBalance {
 
 export function computeBatchDiffEntries(
   accountsWithBalances: AccountWithBalance[],
-  newValuesByAccountId: Record<string, number>
+  newValuesByAccountId: Record<string, number>,
+  date: Date
 ): CreateLedgerEntryInput[] {
   const balanceByAccountId = new Map(
     accountsWithBalances.map((account) => [account.accountId, account.balance])
@@ -27,6 +28,7 @@ export function computeBatchDiffEntries(
       accountId,
       type: diff > 0 ? "debit" : "credit",
       amount: Math.abs(diff),
+      date,
     });
   }
 

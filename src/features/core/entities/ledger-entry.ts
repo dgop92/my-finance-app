@@ -8,12 +8,14 @@ export interface LedgerEntry {
   accountId: string;
   type: LedgerEntryType;
   amount: number;
+  date: Date;
 }
 
 export const CreateLedgerEntryInputSchema = z.object({
   accountId: z.string(),
   type: z.enum(["debit", "credit"]),
   amount: z.number().int().positive(),
+  date: z.date(),
 });
 
 export type CreateLedgerEntryInput = z.infer<
@@ -21,8 +23,10 @@ export type CreateLedgerEntryInput = z.infer<
 >;
 
 export const UpdateLedgerEntryInputSchema = z.object({
+  accountId: z.string().optional(),
   type: z.enum(["debit", "credit"]).optional(),
   amount: z.number().int().positive().optional(),
+  date: z.date().optional(),
 });
 
 export type UpdateLedgerEntryInput = z.infer<
