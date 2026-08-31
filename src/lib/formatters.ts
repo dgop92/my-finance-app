@@ -1,7 +1,7 @@
-// Ledger amounts are stored as whole-cent integers (see LedgerEntry.amount).
-export function formatCurrency(cents: number): string {
-  return new Intl.NumberFormat("en-US", {
+// Ledger amounts are stored as whole-peso integers (see LedgerEntry.amount).
+export function formatCurrency(pesos: number): string {
+  return new Intl.NumberFormat("es-CO", {
     style: "currency",
-    currency: "USD",
-  }).format(cents / 100);
+    currency: "COP",
+  }).format(pesos);
 }

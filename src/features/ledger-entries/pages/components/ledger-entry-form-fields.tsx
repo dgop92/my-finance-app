@@ -73,7 +73,7 @@ export const LedgerEntryFormFields = ({
       </div>
 
       <div className="grid gap-1.5">
-        <Label htmlFor={`${idPrefix}-amount`}>Amount (cents)</Label>
+        <Label htmlFor={`${idPrefix}-amount`}>Amount (COP)</Label>
         <Input
           id={`${idPrefix}-amount`}
           type="number"
