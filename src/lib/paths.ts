@@ -1,13 +1,7 @@
-/**
- * Application route paths
- */
 export const PATHS = {
-  DASHBOARD: "/",
-  SAVINGS_SOURCES: "/savings-sources",
-  FINANCIAL_RECORDS: "/financial-records",
-  FINANCIAL_RECORD_DETAIL: "/financial-records/:id",
-  FINANCIAL_RECORD_CREATE: "/financial-records/create",
-  FINANCIAL_RECORD_EDIT: "/financial-records/:id/edit",
-  ANALYSIS: "/analysis",
-  IMPORT_EXPORT: "/import-export",
+  HOME: "/",
+  ACCOUNTS: "/accounts",
+  LEDGER_ENTRIES: "/entries",
+  BATCH_MODE: "/batch-mode",
+  DATA_TRANSFER: "/import-export",
 };

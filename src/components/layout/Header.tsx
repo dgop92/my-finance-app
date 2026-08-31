@@ -5,7 +5,7 @@ import { navigationItems } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const Header = () => {
+export const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleMobileMenuToggle = () => {
@@ -15,13 +15,11 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-background border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo and app name */}
         <div className="flex items-center gap-3">
           <CircleDollarSign className="w-8 h-8 text-primary" />
-          <span className="text-lg font-semibold hidden md:block">Finance App</span>
+          <span className="text-lg font-semibold hidden md:block">My Finance App</span>
         </div>
 
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           {navigationItems.map((item) => (
             <Link
@@ -35,7 +33,6 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Mobile Menu Button */}
         <Button
           variant="ghost"
           size="icon"
@@ -47,7 +44,6 @@ const Header = () => {
         </Button>
       </div>
 
-      {/* Mobile Navigation */}
       <div
         className={cn(
           "fixed inset-0 bg-background z-50 md:hidden pt-16 transform transition-transform duration-300 ease-in-out",
@@ -79,7 +75,6 @@ const Header = () => {
         </nav>
       </div>
 
-      {/* Overlay for mobile menu */}
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 bg-black/20 z-30 md:hidden"
@@ -90,5 +85,3 @@ const Header = () => {
     </header>
   );
 };
-
-export default Header;

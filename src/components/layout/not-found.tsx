@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { PATHS } from "@/lib/paths";
 
 const NotFound = () => {
   return (
@@ -10,8 +11,8 @@ const NotFound = () => {
         The page you are looking for doesn't exist or has been moved.
       </p>
       <Button asChild>
-        <Link to="/" aria-label="Go back to dashboard">
-          Go back to Dashboard
+        <Link to={PATHS.ACCOUNTS} aria-label="Go back to Accounts">
+          Go back to Accounts
         </Link>
       </Button>
     </div>
