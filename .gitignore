@@ -27,3 +27,5 @@ CLAUDE.local.md
 tsconfig.app.tsbuildinfo
 
 *.env
+
+.scratch
