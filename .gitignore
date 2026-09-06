@@ -28,4 +28,10 @@ tsconfig.app.tsbuildinfo
 
 *.env
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 .scratch
