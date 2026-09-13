@@ -35,3 +35,6 @@ tsconfig.app.tsbuildinfo
 /playwright/.cache/
 
 .scratch
+
+# Claude Code worktrees
+.claude/worktrees/
