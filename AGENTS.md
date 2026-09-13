@@ -24,8 +24,12 @@ A 100% client-side personal finance tracker (React + TypeScript + Vite). No back
 | Type-check only | `pnpm run check-ts` |
 | Lint | `pnpm run lint` |
 | Format | `pnpm run format` |
+| Unit tests | `pnpm test` |
+| E2E tests | `pnpm run test:e2e` |
 
-No test runner is configured yet. If/when tests are added: unit-test only business logic (utility functions, pure services, hook logic) — never UI components or pages; use e2e tests for critical user journeys (creating/listing/editing core records).
+Unit-test only business logic (utility functions, pure services, hook logic) — never UI components or pages; use e2e tests for critical user journeys (creating/listing/editing core records).
+
+If an e2e test fails to launch with a missing shared library / browser dependency error (e.g. `libatk-1.0.so.0: cannot open shared object file`), stop and tell the user that `npx playwright install-deps chromium` has not been run — do not attempt to install OS packages yourself.
 
 ## Coding Conventions and Style
 
