@@ -24,8 +24,13 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       quotes: ["error", "double"],
-      "no-unused-vars": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+    },
+  },
+  {
+    files: ["src/components/ui/**/*.{ts,tsx}"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 );
