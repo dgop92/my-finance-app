@@ -37,3 +37,25 @@ export function getTimeRangeStart(range: TimeRange, referenceDate: Date): Date |
 
   return start;
 }
+
+// Resolves a range into a month count for month-bucketed services (e.g.
+// computeNetWorthHistory). For "all", counts months back to oldestDate
+// (inclusive of both the oldest and reference month); with no data yet,
+// falls back to a single month.
+export function getTimeRangeMonthsCount(
+  range: TimeRange,
+  oldestDate: Date | null,
+  referenceDate: Date
+): number {
+  if (range !== "all") {
+    return TIME_RANGE_MONTHS[range];
+  }
+
+  if (!oldestDate) return 1;
+
+  const months =
+    (referenceDate.getFullYear() - oldestDate.getFullYear()) * 12 +
+    (referenceDate.getMonth() - oldestDate.getMonth()) +
+    1;
+  return Math.max(months, 1);
+}
