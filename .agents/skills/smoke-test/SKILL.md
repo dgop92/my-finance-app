@@ -1,6 +1,6 @@
 ---
 name: smoke-test
-description: Browser-driven smoke test for this app's UI — starts the dev server, seeds localStorage directly with realistic Account/LedgerEntry data, drives a page with Playwright, and screenshots it for visual review. Use when asked to visually verify a UI change, check that a page renders correctly, or confirm a feature works in a real browser (not just unit/e2e tests). Do NOT use for the e2e test suite itself (`pnpm run test:e2e`, `e2e/*.spec.ts`) — this is for one-off manual/visual checks, not written test files. An empty-state screenshot proves nothing in this app, so seeding is not optional.
+description: Browser-driven smoke test — seeds localStorage with realistic data and screenshots a page via Playwright. Use to visually verify a UI change in a real browser. Not for the e2e test suite (`pnpm run test:e2e`).
 ---
 
 # Smoke Test
