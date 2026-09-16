@@ -7,6 +7,7 @@ import { AccountsPage } from "@/features/accounts/pages/accounts-page";
 import { LedgerEntriesPage } from "@/features/ledger-entries/pages/entries-page";
 import { BatchModePage } from "@/features/batch-mode/pages/batch-mode-page";
 import { DataTransferPage } from "@/features/data-transfer/pages/data-transfer-page";
+import { AnalyticsPage } from "@/features/analytics/pages/analytics-page";
 import { PATHS } from "@/lib/paths";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ function App() {
             <Route path={PATHS.LEDGER_ENTRIES} element={<LedgerEntriesPage />} />
             <Route path={PATHS.BATCH_MODE} element={<BatchModePage />} />
             <Route path={PATHS.DATA_TRANSFER} element={<DataTransferPage />} />
+            <Route path={PATHS.ANALYTICS} element={<AnalyticsPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
