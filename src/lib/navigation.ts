@@ -1,4 +1,11 @@
-import { ArrowLeftRight, DatabaseBackup, LayoutDashboard, ListChecks, Wallet } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BarChart3,
+  DatabaseBackup,
+  LayoutDashboard,
+  ListChecks,
+  Wallet,
+} from "lucide-react";
 import { PATHS } from "./paths";
 
 export type NavigationItem = {
@@ -32,5 +39,10 @@ export const navigationItems: NavigationItem[] = [
     name: "Batch mode",
     path: PATHS.BATCH_MODE,
     icon: ListChecks,
-  }
+  },
+  {
+    name: "Analytics",
+    path: PATHS.ANALYTICS,
+    icon: BarChart3,
+  },
 ];

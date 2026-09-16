@@ -4,4 +4,5 @@ export const PATHS = {
   LEDGER_ENTRIES: "/entries",
   BATCH_MODE: "/batch-mode",
   DATA_TRANSFER: "/import-export",
+  ANALYTICS: "/analytics",
 };
