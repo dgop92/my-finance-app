@@ -64,4 +64,28 @@ describe("computeNetWorthHistory", () => {
     expect(result[1]).toMatchObject({ monthLabel: "Aug 2026", netWorth: 1200, diff: 200 });
     expect(result[2]).toMatchObject({ monthLabel: "Jul 2026", netWorth: 1000, diff: null });
   });
+
+  it("scopes history to the given accountIds when provided, ignoring entries outside that set", () => {
+    const referenceDate = new Date("2026-09-15");
+    const entries = [
+      makeEntry({ accountId: "account-1", type: "debit", amount: 1000, date: new Date("2026-09-10") }),
+      makeEntry({ accountId: "account-2", type: "debit", amount: 500, date: new Date("2026-09-10") }),
+    ];
+
+    const result = computeNetWorthHistory(entries, 1, referenceDate, new Set(["account-1"]));
+
+    expect(result[0].netWorth).toBe(1000);
+  });
+
+  it("includes all entries when accountIds is omitted", () => {
+    const referenceDate = new Date("2026-09-15");
+    const entries = [
+      makeEntry({ accountId: "account-1", type: "debit", amount: 1000, date: new Date("2026-09-10") }),
+      makeEntry({ accountId: "account-2", type: "debit", amount: 500, date: new Date("2026-09-10") }),
+    ];
+
+    const result = computeNetWorthHistory(entries, 1, referenceDate);
+
+    expect(result[0].netWorth).toBe(1500);
+  });
 });

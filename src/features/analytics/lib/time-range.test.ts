@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getTimeRangeStart } from "./time-range";
+import { getTimeRangeMonthsCount, getTimeRangeStart } from "./time-range";
 
 describe("getTimeRangeStart", () => {
   const referenceDate = new Date(2026, 5, 15);
@@ -34,5 +34,29 @@ describe("getTimeRangeStart", () => {
     const endOfAugust = new Date(2026, 7, 31);
     // 2026 is not a leap year, so Feb has 28 days.
     expect(getTimeRangeStart("6m", endOfAugust)).toEqual(new Date(2026, 1, 28));
+  });
+});
+
+describe("getTimeRangeMonthsCount", () => {
+  const referenceDate = new Date(2026, 5, 15);
+
+  it("returns the fixed month count for bounded ranges, ignoring oldestDate", () => {
+    expect(getTimeRangeMonthsCount("3m", new Date(2020, 0, 1), referenceDate)).toBe(3);
+    expect(getTimeRangeMonthsCount("6m", null, referenceDate)).toBe(6);
+    expect(getTimeRangeMonthsCount("12m", null, referenceDate)).toBe(12);
+    expect(getTimeRangeMonthsCount("24m", null, referenceDate)).toBe(24);
+  });
+
+  it("counts months back to oldestDate inclusive for all time", () => {
+    // Jan 2026 through Jun 2026 is 6 months.
+    expect(getTimeRangeMonthsCount("all", new Date(2026, 0, 20), referenceDate)).toBe(6);
+  });
+
+  it("returns 1 month for all time when oldestDate and referenceDate are in the same month", () => {
+    expect(getTimeRangeMonthsCount("all", new Date(2026, 5, 1), referenceDate)).toBe(1);
+  });
+
+  it("falls back to 1 month for all time when there is no data yet", () => {
+    expect(getTimeRangeMonthsCount("all", null, referenceDate)).toBe(1);
   });
 });
