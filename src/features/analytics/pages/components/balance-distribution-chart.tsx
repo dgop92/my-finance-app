@@ -74,17 +74,17 @@ export const BalanceDistributionChart = ({ data }: BalanceDistributionChartProps
               </PieChart>
             </ChartContainer>
 
-            <ul className="flex flex-1 flex-col gap-2">
+            <ul className="flex flex-1 flex-col gap-2 overflow-hidden">
               {data.shares.map((share, index) => (
-                <li key={share.accountId} className="flex items-center justify-between gap-4 text-sm">
-                  <div className="flex items-center gap-1.5">
+                <li key={share.accountId} className="flex items-center justify-between gap-2 text-sm">
+                  <div className="flex min-w-0 items-center gap-1.5">
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
                       style={{ backgroundColor: SLICE_COLORS[index % SLICE_COLORS.length] }}
                     />
-                    <span>{share.accountName}</span>
+                    <span className="truncate">{share.accountName}</span>
                   </div>
-                  <span className="font-mono tabular-nums text-muted-foreground">
+                  <span className="shrink-0 whitespace-nowrap font-mono tabular-nums text-muted-foreground">
                     {formatCurrency(share.balance)} ({share.percentageOfNetWorth.toFixed(1)}%)
                   </span>
                 </li>
@@ -102,9 +102,9 @@ export const BalanceDistributionChart = ({ data }: BalanceDistributionChartProps
             </p>
             <ul className="flex flex-col gap-1">
               {data.negativeBalanceAccounts.map((account) => (
-                <li key={account.accountId} className="flex justify-between text-sm">
-                  <span>{account.accountName}</span>
-                  <span className="font-mono font-medium tabular-nums text-red-600">
+                <li key={account.accountId} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="min-w-0 truncate">{account.accountName}</span>
+                  <span className="shrink-0 whitespace-nowrap font-mono font-medium tabular-nums text-red-600">
                     {formatCurrency(account.balance)}
                   </span>
                 </li>
