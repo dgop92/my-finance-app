@@ -6,11 +6,21 @@ import { TimeRangeSelector } from "./components/time-range-selector";
 import { StatTile } from "./components/stat-tile";
 import { NetWorthTrendChart } from "./components/net-worth-trend-chart";
 import { DepositsWithdrawalsTrendChart } from "./components/deposits-withdrawals-trend-chart";
+import { BalanceDistributionChart } from "./components/balance-distribution-chart";
+import { DepositsWithdrawalsByAccountChart } from "./components/deposits-withdrawals-by-account-chart";
 
 export const AnalyticsPage = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>(DEFAULT_TIME_RANGE);
-  const { netWorth, stats, netWorthTrend, depositsWithdrawalsTrend, isPending, error } =
-    useAnalytics(timeRange);
+  const {
+    netWorth,
+    stats,
+    netWorthTrend,
+    depositsWithdrawalsTrend,
+    balanceDistribution,
+    depositsWithdrawalsByAccount,
+    isPending,
+    error,
+  } = useAnalytics(timeRange);
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,6 +49,13 @@ export const AnalyticsPage = () => {
         <div className="grid gap-4 lg:grid-cols-2">
           <NetWorthTrendChart data={netWorthTrend} />
           <DepositsWithdrawalsTrendChart data={depositsWithdrawalsTrend} />
+        </div>
+      )}
+
+      {balanceDistribution && depositsWithdrawalsByAccount && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <BalanceDistributionChart data={balanceDistribution} />
+          <DepositsWithdrawalsByAccountChart data={depositsWithdrawalsByAccount} />
         </div>
       )}
     </div>
