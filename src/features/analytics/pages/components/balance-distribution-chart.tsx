@@ -40,7 +40,10 @@ export const BalanceDistributionChart = ({ data }: BalanceDistributionChartProps
       <CardContent className="flex flex-col gap-4">
         {data.shares.length > 0 ? (
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-56 w-full">
+            <ChartContainer
+              config={chartConfig}
+              className="mx-auto aspect-square max-h-56 w-full shrink-0 sm:w-56"
+            >
               <PieChart>
                 <ChartTooltip
                   content={
@@ -74,9 +77,9 @@ export const BalanceDistributionChart = ({ data }: BalanceDistributionChartProps
               </PieChart>
             </ChartContainer>
 
-            <ul className="flex flex-1 flex-col gap-2 overflow-hidden">
+            <ul className="flex min-w-0 flex-1 flex-col gap-2">
               {data.shares.map((share, index) => (
-                <li key={share.accountId} className="flex items-center justify-between gap-2 text-sm">
+                <li key={share.accountId} className="flex min-w-0 flex-col text-sm">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
@@ -84,7 +87,7 @@ export const BalanceDistributionChart = ({ data }: BalanceDistributionChartProps
                     />
                     <span className="truncate">{share.accountName}</span>
                   </div>
-                  <span className="shrink-0 whitespace-nowrap font-mono tabular-nums text-muted-foreground">
+                  <span className="whitespace-nowrap pl-4 font-mono text-xs tabular-nums text-muted-foreground">
                     {formatCurrency(share.balance)} ({share.percentageOfNetWorth.toFixed(1)}%)
                   </span>
                 </li>
