@@ -4,6 +4,8 @@ import { useNetWorth } from "@/features/accounts/pages/hooks/use-net-worth";
 import { computeLedgerEntryStats } from "@/features/core/services/ledger-entry-stats";
 import { computeNetWorthHistory } from "@/features/core/services/net-worth-history";
 import { computeDepositsWithdrawalsByMonth } from "@/features/core/services/deposits-withdrawals-by-month";
+import { computeDepositsWithdrawalsByAccount } from "@/features/core/services/deposits-withdrawals-by-account";
+import { computeAccountBalanceDistribution } from "@/features/core/services/account-balance-distribution";
 import { computeOldestEntryDate } from "@/features/core/services/oldest-entry-date";
 import { ledgerEntryRepository } from "@/features/ledger-entries/repositories/repository.factory";
 import { getTimeRangeMonthsCount, getTimeRangeStart, TimeRange } from "@/features/analytics/lib/time-range";
@@ -11,6 +13,7 @@ import { getTimeRangeMonthsCount, getTimeRangeStart, TimeRange } from "@/feature
 export const useAnalytics = (timeRange: TimeRange) => {
   const {
     accounts,
+    balanceByAccountId,
     netWorth,
     isPending: isNetWorthPending,
     error: netWorthError,
@@ -60,11 +63,27 @@ export const useAnalytics = (timeRange: TimeRange) => {
     return [...computeDepositsWithdrawalsByMonth(entries, monthsCount, now, accountIds)].reverse();
   }, [entries, accountIds, monthsCount, now]);
 
+  // Point-in-time view of current balances, unaffected by the time-range selector.
+  const balanceDistribution = useMemo(() => {
+    if (!accounts || !balanceByAccountId || netWorth === undefined) return undefined;
+    return computeAccountBalanceDistribution(accounts, balanceByAccountId, netWorth);
+  }, [accounts, balanceByAccountId, netWorth]);
+
+  const depositsWithdrawalsByAccount = useMemo(() => {
+    if (!entries || !accounts) return undefined;
+    return computeDepositsWithdrawalsByAccount(entries, accounts, {
+      start: getTimeRangeStart(timeRange, now),
+      end: now,
+    });
+  }, [entries, accounts, timeRange, now]);
+
   return {
     netWorth,
     stats,
     netWorthTrend,
     depositsWithdrawalsTrend,
+    balanceDistribution,
+    depositsWithdrawalsByAccount,
     isPending: isNetWorthPending || isEntriesPending,
     error: netWorthError ?? entriesError,
   };
