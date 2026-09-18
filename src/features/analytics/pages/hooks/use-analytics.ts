@@ -7,10 +7,12 @@ import { computeDepositsWithdrawalsByMonth } from "@/features/core/services/depo
 import { computeDepositsWithdrawalsByAccount } from "@/features/core/services/deposits-withdrawals-by-account";
 import { computeAccountBalanceDistribution } from "@/features/core/services/account-balance-distribution";
 import { computeOldestEntryDate } from "@/features/core/services/oldest-entry-date";
+import { computeRunningBalance } from "@/features/core/services/running-balance";
+import { computeMonthlyTransactionVolume } from "@/features/core/services/monthly-transaction-volume";
 import { ledgerEntryRepository } from "@/features/ledger-entries/repositories/repository.factory";
 import { getTimeRangeMonthsCount, getTimeRangeStart, TimeRange } from "@/features/analytics/lib/time-range";
 
-export const useAnalytics = (timeRange: TimeRange) => {
+export const useAnalytics = (timeRange: TimeRange, selectedAccountId?: string) => {
   const {
     accounts,
     balanceByAccountId,
@@ -77,6 +79,19 @@ export const useAnalytics = (timeRange: TimeRange) => {
     });
   }, [entries, accounts, timeRange, now]);
 
+  const runningBalance = useMemo(() => {
+    if (!entries || !selectedAccountId) return undefined;
+    return computeRunningBalance(entries, selectedAccountId, {
+      start: getTimeRangeStart(timeRange, now),
+      end: now,
+    });
+  }, [entries, selectedAccountId, timeRange, now]);
+
+  const monthlyTransactionVolume = useMemo(() => {
+    if (!entries || !accountIds || monthsCount === undefined) return undefined;
+    return [...computeMonthlyTransactionVolume(entries, monthsCount, now, accountIds)].reverse();
+  }, [entries, accountIds, monthsCount, now]);
+
   return {
     netWorth,
     stats,
@@ -84,6 +99,8 @@ export const useAnalytics = (timeRange: TimeRange) => {
     depositsWithdrawalsTrend,
     balanceDistribution,
     depositsWithdrawalsByAccount,
+    runningBalance,
+    monthlyTransactionVolume,
     isPending: isNetWorthPending || isEntriesPending,
     error: netWorthError ?? entriesError,
   };
