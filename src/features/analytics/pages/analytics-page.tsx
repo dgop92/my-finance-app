@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { formatCurrency } from "@/lib/formatters";
+import { useNetWorth } from "@/features/accounts/pages/hooks/use-net-worth";
 import { DEFAULT_TIME_RANGE, TimeRange } from "@/features/analytics/lib/time-range";
 import { useAnalytics } from "./hooks/use-analytics";
 import { TimeRangeSelector } from "./components/time-range-selector";
@@ -8,9 +9,20 @@ import { NetWorthTrendChart } from "./components/net-worth-trend-chart";
 import { DepositsWithdrawalsTrendChart } from "./components/deposits-withdrawals-trend-chart";
 import { BalanceDistributionChart } from "./components/balance-distribution-chart";
 import { DepositsWithdrawalsByAccountChart } from "./components/deposits-withdrawals-by-account-chart";
+import { RunningBalanceChart } from "./components/running-balance-chart";
+import { MonthlyTransactionVolumeChart } from "./components/monthly-transaction-volume-chart";
 
 export const AnalyticsPage = () => {
   const [timeRange, setTimeRange] = useState<TimeRange>(DEFAULT_TIME_RANGE);
+  const [selectedAccountId, setSelectedAccountId] = useState<string | undefined>(undefined);
+
+  // Accounts are fetched independently of useAnalytics (TanStack Query
+  // dedupes the underlying request) so the running-balance dropdown can
+  // default to the first non-archived account before the user picks one,
+  // without a setState-in-effect round trip.
+  const { accounts } = useNetWorth();
+  const effectiveAccountId = selectedAccountId ?? accounts?.[0]?.id;
+
   const {
     netWorth,
     stats,
@@ -18,9 +30,11 @@ export const AnalyticsPage = () => {
     depositsWithdrawalsTrend,
     balanceDistribution,
     depositsWithdrawalsByAccount,
+    runningBalance,
+    monthlyTransactionVolume,
     isPending,
     error,
-  } = useAnalytics(timeRange);
+  } = useAnalytics(timeRange, effectiveAccountId);
 
   return (
     <div className="flex flex-col gap-6">
@@ -56,6 +70,18 @@ export const AnalyticsPage = () => {
         <div className="grid gap-4 lg:grid-cols-2">
           <BalanceDistributionChart data={balanceDistribution} />
           <DepositsWithdrawalsByAccountChart data={depositsWithdrawalsByAccount} />
+        </div>
+      )}
+
+      {runningBalance && accounts && monthlyTransactionVolume && (
+        <div className="grid gap-4 lg:grid-cols-2">
+          <RunningBalanceChart
+            data={runningBalance}
+            accounts={accounts}
+            selectedAccountId={effectiveAccountId}
+            onAccountChange={setSelectedAccountId}
+          />
+          <MonthlyTransactionVolumeChart data={monthlyTransactionVolume} />
         </div>
       )}
     </div>
