@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatFormDate, parseFormDate } from "./ledger-entry-form-date";
+import { formatFormDate, parseFormDate } from "./form-date";
 
 describe("formatFormDate", () => {
   it("pads single-digit month and day", () => {

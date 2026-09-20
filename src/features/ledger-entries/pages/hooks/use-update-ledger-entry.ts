@@ -11,7 +11,7 @@ import {
   LedgerEntryFormSchema,
   LedgerEntryFormValues,
 } from "@/features/ledger-entries/lib/ledger-entry-form-schema";
-import { formatFormDate, parseFormDate } from "@/features/ledger-entries/lib/ledger-entry-form-date";
+import { formatFormDate, parseFormDate } from "@/lib/form-date";
 
 export interface UseUpdateLedgerEntryArgs {
   entry: LedgerEntry;
