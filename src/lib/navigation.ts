@@ -4,6 +4,7 @@ import {
   DatabaseBackup,
   LayoutDashboard,
   ListChecks,
+  Receipt,
   Wallet,
 } from "lucide-react";
 import { PATHS } from "./paths";
@@ -29,6 +30,11 @@ export const navigationItems: NavigationItem[] = [
     name: "Entries",
     path: PATHS.LEDGER_ENTRIES,
     icon: ArrowLeftRight,
+  },
+  {
+    name: "Expenses",
+    path: PATHS.EXPENSES,
+    icon: Receipt,
   },
   {
     name: "Import / Export",

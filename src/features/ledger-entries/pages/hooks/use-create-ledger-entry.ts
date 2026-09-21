@@ -7,7 +7,7 @@ import {
   LedgerEntryFormSchema,
   LedgerEntryFormValues,
 } from "@/features/ledger-entries/lib/ledger-entry-form-schema";
-import { parseFormDate, todayFormDate } from "@/features/ledger-entries/lib/ledger-entry-form-date";
+import { parseFormDate, todayFormDate } from "@/lib/form-date";
 
 const defaultValues: LedgerEntryFormValues = {
   accountId: "",

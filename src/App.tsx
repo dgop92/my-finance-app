@@ -5,6 +5,7 @@ import { NotFound } from "@/components/layout/not-found";
 import { DashboardPage } from "@/features/dashboard/pages/dashboard-page";
 import { AccountsPage } from "@/features/accounts/pages/accounts-page";
 import { LedgerEntriesPage } from "@/features/ledger-entries/pages/entries-page";
+import { ExpensesPage } from "@/features/expenses/pages/expenses-page";
 import { BatchModePage } from "@/features/batch-mode/pages/batch-mode-page";
 import { DataTransferPage } from "@/features/data-transfer/pages/data-transfer-page";
 import { AnalyticsPage } from "@/features/analytics/pages/analytics-page";
@@ -21,6 +22,7 @@ function App() {
             <Route path={PATHS.HOME} element={<DashboardPage />} />
             <Route path={PATHS.ACCOUNTS} element={<AccountsPage />} />
             <Route path={PATHS.LEDGER_ENTRIES} element={<LedgerEntriesPage />} />
+            <Route path={PATHS.EXPENSES} element={<ExpensesPage />} />
             <Route path={PATHS.BATCH_MODE} element={<BatchModePage />} />
             <Route path={PATHS.DATA_TRANSFER} element={<DataTransferPage />} />
             <Route path={PATHS.ANALYTICS} element={<AnalyticsPage />} />
