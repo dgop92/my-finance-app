@@ -73,6 +73,28 @@ describe("InMemoryExpenseRepository", () => {
     expect(expenses).toEqual([createdSecond, createdFirst]);
   });
 
+  it("creates many expenses in one call, additive to existing ones", async () => {
+    const repository = new InMemoryExpenseRepository();
+    const existing = await repository.create({
+      type: "groceries",
+      amount: 100,
+      date: new Date("2026-01-01"),
+      notes: "",
+    });
+
+    const created = await repository.createMany([
+      { type: "transport", amount: 200, date: new Date("2026-01-02"), notes: "" },
+      { type: "health", amount: 300, date: new Date("2026-01-03"), notes: "" },
+    ]);
+
+    expect(created).toHaveLength(2);
+    const expenses = await repository.getMany();
+    expect(expenses).toHaveLength(3);
+    expect(expenses.map((expense) => expense.id)).toEqual(
+      expect.arrayContaining([existing.id, created[0].id, created[1].id])
+    );
+  });
+
   it("updates an expense's fields", async () => {
     const repository = new InMemoryExpenseRepository();
     const created = await repository.create({

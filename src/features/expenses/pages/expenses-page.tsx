@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BatchImportExpensesForm } from "./components/batch-import-expenses-form";
 import { CreateExpenseForm } from "./components/create-expense-form";
 import { ExpenseList } from "./components/expense-list";
 
@@ -13,6 +14,15 @@ export const ExpensesPage = () => {
         </CardHeader>
         <CardContent>
           <CreateExpenseForm />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Import from JSON</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <BatchImportExpensesForm />
         </CardContent>
       </Card>
 
