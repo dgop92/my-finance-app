@@ -24,3 +24,22 @@ export async function addLedgerEntry(page: Page, options: AddLedgerEntryOptions)
   await page.getByLabel("Amount (COP)").fill(options.amount);
   await page.getByRole("button", { name: "Add entry" }).click();
 }
+
+export interface AddExpenseOptions {
+  category: string;
+  amount: string;
+  note?: string;
+}
+
+export async function addExpense(page: Page, options: AddExpenseOptions): Promise<void> {
+  await page.getByRole("combobox", { name: "Category" }).click();
+  await page.getByRole("option", { name: options.category }).click();
+
+  await page.getByLabel("Amount (COP)").fill(options.amount);
+
+  if (options.note) {
+    await page.getByLabel("Note (optional)").fill(options.note);
+  }
+
+  await page.getByRole("button", { name: "Add expense" }).click();
+}
