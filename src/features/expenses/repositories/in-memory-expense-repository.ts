@@ -15,16 +15,15 @@ export class InMemoryExpenseRepository implements ExpenseRepository {
   }
 
   create(input: CreateExpenseInput): Promise<Expense> {
-    const expense: Expense = {
-      id: uuidv4(),
-      createdAt: new Date(),
-      date: input.date,
-      amount: input.amount,
-      notes: input.notes,
-      type: input.type,
-    };
+    const expense = this.buildExpense(input);
     this.expenses.push(expense);
     return Promise.resolve(expense);
+  }
+
+  createMany(inputs: CreateExpenseInput[]): Promise<Expense[]> {
+    const created = inputs.map((input) => this.buildExpense(input));
+    this.expenses.push(...created);
+    return Promise.resolve(created);
   }
 
   async update(id: string, input: UpdateExpenseInput): Promise<Expense> {
@@ -58,5 +57,16 @@ export class InMemoryExpenseRepository implements ExpenseRepository {
       throw new Error(`Expense not found: ${id}`);
     }
     return expense;
+  }
+
+  private buildExpense(input: CreateExpenseInput): Expense {
+    return {
+      id: uuidv4(),
+      createdAt: new Date(),
+      date: input.date,
+      amount: input.amount,
+      notes: input.notes,
+      type: input.type,
+    };
   }
 }

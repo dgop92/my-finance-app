@@ -7,6 +7,7 @@ import {
 export interface ExpenseRepository {
   getMany(): Promise<Expense[]>;
   create(input: CreateExpenseInput): Promise<Expense>;
+  createMany(inputs: CreateExpenseInput[]): Promise<Expense[]>;
   update(id: string, input: UpdateExpenseInput): Promise<Expense>;
   delete(id: string): Promise<void>;
   replaceAll(expenses: Expense[]): Promise<void>;

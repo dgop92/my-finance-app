@@ -18,16 +18,16 @@ export class ExpenseLocalStorageRepository implements ExpenseRepository {
 
   async create(input: CreateExpenseInput): Promise<Expense> {
     const expenses = loadExpenses();
-    const expense: Expense = {
-      id: uuidv4(),
-      createdAt: new Date(),
-      date: input.date,
-      amount: input.amount,
-      notes: input.notes,
-      type: input.type,
-    };
+    const expense = this.buildExpense(input);
     saveExpenses([...expenses, expense]);
     return expense;
+  }
+
+  async createMany(inputs: CreateExpenseInput[]): Promise<Expense[]> {
+    const expenses = loadExpenses();
+    const created = inputs.map((input) => this.buildExpense(input));
+    saveExpenses([...expenses, ...created]);
+    return created;
   }
 
   async update(id: string, input: UpdateExpenseInput): Promise<Expense> {
@@ -61,5 +61,16 @@ export class ExpenseLocalStorageRepository implements ExpenseRepository {
       throw new Error(`Expense not found: ${id}`);
     }
     return index;
+  }
+
+  private buildExpense(input: CreateExpenseInput): Expense {
+    return {
+      id: uuidv4(),
+      createdAt: new Date(),
+      date: input.date,
+      amount: input.amount,
+      notes: input.notes,
+      type: input.type,
+    };
   }
 }
