@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { accountRepository } from "@/features/accounts/repositories/repository.factory";
 import { ledgerEntryRepository } from "@/features/ledger-entries/repositories/repository.factory";
+import { expenseRepository } from "@/features/expenses/repositories/repository.factory";
 import { importLedgerData } from "@/features/data-transfer/services/ledger-data-transfer";
 
 function readFileAsJson(file: File): Promise<unknown> {
@@ -23,11 +24,12 @@ export const useImportLedgerData = () => {
   const mutation = useMutation({
     mutationFn: async (file: File) => {
       const raw = await readFileAsJson(file);
-      await importLedgerData(raw, { accountRepository, ledgerEntryRepository });
+      await importLedgerData(raw, { accountRepository, ledgerEntryRepository, expenseRepository });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
       await queryClient.invalidateQueries({ queryKey: ["ledgerEntries"] });
+      await queryClient.invalidateQueries({ queryKey: ["expenses"] });
     },
   });
 

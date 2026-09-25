@@ -34,7 +34,7 @@ export const DataTransferPage = () => {
         <CardHeader>
           <CardTitle>Export data</CardTitle>
           <CardDescription>
-            Download all accounts and ledger entries as a JSON backup file.
+            Download all accounts, ledger entries, and expenses as a JSON backup file.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -48,8 +48,8 @@ export const DataTransferPage = () => {
         <CardHeader>
           <CardTitle>Import data</CardTitle>
           <CardDescription>
-            Importing a file fully replaces all existing accounts and ledger entries. This
-            cannot be undone.
+            Importing a file fully replaces all existing accounts, ledger entries, and expenses.
+            This cannot be undone.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
