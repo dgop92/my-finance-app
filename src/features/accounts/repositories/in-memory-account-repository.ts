@@ -33,15 +33,22 @@ export class InMemoryAccountRepository implements AccountRepository {
       name: input.name.trim(),
       createdAt: new Date(),
       archived: false,
+      isSavingAccount: input.isSavingAccount ?? false,
     };
     this.accounts.push(account);
     return Promise.resolve(account);
   }
 
-  async update(id: string, input: Pick<UpdateAccountInput, "name">): Promise<Account> {
+  async update(
+    id: string,
+    input: Pick<UpdateAccountInput, "name" | "isSavingAccount">
+  ): Promise<Account> {
     const account = this.findOrThrow(id);
     if (input.name !== undefined) {
       account.name = input.name.trim();
+    }
+    if (input.isSavingAccount !== undefined) {
+      account.isSavingAccount = input.isSavingAccount;
     }
     return account;
   }

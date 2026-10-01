@@ -102,7 +102,11 @@ describe("importLedgerData", () => {
     const expenses = await repositories.expenseRepository.getMany();
 
     expect(accounts).toEqual([
-      { ...payload.accounts[0], createdAt: new Date(payload.accounts[0].createdAt) },
+      {
+        ...payload.accounts[0],
+        createdAt: new Date(payload.accounts[0].createdAt),
+        isSavingAccount: false,
+      },
     ]);
     expect(ledgerEntries).toEqual([
       {

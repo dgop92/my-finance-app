@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 import {
   Account,
+  AccountSchema,
   CreateAccountInput,
   UpdateAccountInput,
 } from "@/features/core/entities/account";
@@ -16,8 +18,7 @@ function loadAccounts(): Account[] {
   if (!raw) {
     return [];
   }
-  const parsed = JSON.parse(raw) as Account[];
-  return parsed.map((account) => ({ ...account, createdAt: new Date(account.createdAt) }));
+  return z.array(AccountSchema).parse(JSON.parse(raw));
 }
 
 function saveAccounts(accounts: Account[]): void {
@@ -37,17 +38,22 @@ export class AccountLocalStorageRepository implements AccountRepository {
       name: input.name.trim(),
       createdAt: new Date(),
       archived: false,
+      isSavingAccount: input.isSavingAccount ?? false,
     };
     saveAccounts([...accounts, account]);
     return account;
   }
 
-  async update(id: string, input: Pick<UpdateAccountInput, "name">): Promise<Account> {
+  async update(
+    id: string,
+    input: Pick<UpdateAccountInput, "name" | "isSavingAccount">
+  ): Promise<Account> {
     const accounts = loadAccounts();
     const index = this.findIndexOrThrow(accounts, id);
     const updated: Account = {
       ...accounts[index],
       name: input.name !== undefined ? input.name.trim() : accounts[index].name,
+      isSavingAccount: input.isSavingAccount ?? accounts[index].isSavingAccount,
     };
     accounts[index] = updated;
     saveAccounts(accounts);

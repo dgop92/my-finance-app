@@ -1,4 +1,4 @@
-import { Account } from "../entities/account";
+import { Account, AccountSchema } from "../entities/account";
 import { LedgerEntry } from "../entities/ledger-entry";
 import { Expense } from "../entities/expense";
 
@@ -34,10 +34,7 @@ export function parseLedgerDataPayload(raw: unknown): LedgerDataPayload {
   };
 
   return {
-    accounts: accounts.map((account) => ({
-      ...account,
-      createdAt: new Date(account.createdAt),
-    })),
+    accounts: accounts.map((account) => AccountSchema.parse(account)),
     ledgerEntries: ledgerEntries.map((entry) => ({
       ...entry,
       createdAt: new Date(entry.createdAt),

@@ -8,6 +8,7 @@ function makeAccount(overrides: Partial<Account>): Account {
     name: "Account",
     createdAt: new Date(),
     archived: false,
+    isSavingAccount: false,
     ...overrides,
   };
 }

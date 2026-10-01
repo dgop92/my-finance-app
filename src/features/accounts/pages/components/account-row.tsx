@@ -25,6 +25,12 @@ export const AccountRow = ({ account, balance }: AccountRowProps) => {
       <li className="flex flex-col gap-2 border rounded-md p-4">
         <form onSubmit={handleFormSubmit} className="flex items-center gap-2">
           <Input {...register("name")} aria-label={`Rename ${account.name}`} autoFocus />
+          <input
+            type="checkbox"
+            className="size-4"
+            aria-label={`Savings account ${account.name}`}
+            {...register("isSavingAccount")}
+          />
           <Button type="submit" size="sm">
             Save
           </Button>

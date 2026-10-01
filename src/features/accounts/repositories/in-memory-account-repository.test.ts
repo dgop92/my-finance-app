@@ -23,7 +23,39 @@ describe("InMemoryAccountRepository", () => {
 
     expect(created.name).toBe("Checking");
     expect(created.archived).toBe(false);
+    expect(created.isSavingAccount).toBe(false);
     expect(accounts).toEqual([created]);
+  });
+
+  it("creates a savings account and keeps the flag when listed", async () => {
+    const repository = new InMemoryAccountRepository();
+
+    const created = await repository.create({ name: "Emergency fund", isSavingAccount: true });
+    const accounts = await repository.getMany();
+
+    expect(created.isSavingAccount).toBe(true);
+    expect(accounts).toEqual([created]);
+  });
+
+  it("toggles the savings flag without touching the name", async () => {
+    const repository = new InMemoryAccountRepository();
+    const account = await repository.create({ name: "Checking", isSavingAccount: false });
+
+    const flagged = await repository.update(account.id, { isSavingAccount: true });
+    expect(flagged.isSavingAccount).toBe(true);
+    expect(flagged.name).toBe("Checking");
+
+    const unflagged = await repository.update(account.id, { isSavingAccount: false });
+    expect(unflagged.isSavingAccount).toBe(false);
+  });
+
+  it("keeps the savings flag when only renaming", async () => {
+    const repository = new InMemoryAccountRepository();
+    const account = await repository.create({ name: "Fund", isSavingAccount: true });
+
+    const renamed = await repository.update(account.id, { name: "Rainy day fund" });
+
+    expect(renamed.isSavingAccount).toBe(true);
   });
 
   it("excludes archived accounts by default and includes them when requested", async () => {

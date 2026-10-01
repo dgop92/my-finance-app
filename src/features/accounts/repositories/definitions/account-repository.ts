@@ -7,7 +7,10 @@ import {
 export interface AccountRepository {
   getMany(includeArchived?: boolean): Promise<Account[]>;
   create(input: CreateAccountInput): Promise<Account>;
-  update(id: string, input: Pick<UpdateAccountInput, "name">): Promise<Account>;
+  update(
+    id: string,
+    input: Pick<UpdateAccountInput, "name" | "isSavingAccount">
+  ): Promise<Account>;
   archive(id: string): Promise<Account>;
   replaceAll(accounts: Account[]): Promise<void>;
 }

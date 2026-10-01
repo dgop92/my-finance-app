@@ -5,9 +5,12 @@ import { z } from "zod";
 import { Account, UpdateAccountInputSchema } from "@/features/core/entities/account";
 import { accountRepository } from "@/features/accounts/repositories/repository.factory";
 
-// The rename form always submits a name, unlike UpdateAccountInputSchema's
-// optional `name` (which also covers archiving), so pick and require it.
-const RenameAccountInputSchema = UpdateAccountInputSchema.pick({ name: true }).required();
+// The edit form always submits both fields, unlike UpdateAccountInputSchema's
+// optional fields (which also cover archiving), so pick and require them.
+const RenameAccountInputSchema = UpdateAccountInputSchema.pick({
+  name: true,
+  isSavingAccount: true,
+}).required();
 type RenameAccountInput = z.infer<typeof RenameAccountInputSchema>;
 
 export interface UseRenameAccountArgs {
@@ -19,7 +22,10 @@ export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: (input: RenameAccountInput) =>
-      accountRepository.update(account.id, { name: input.name }),
+      accountRepository.update(account.id, {
+        name: input.name,
+        isSavingAccount: input.isSavingAccount,
+      }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["accounts"] });
       onDone();
@@ -32,7 +38,7 @@ export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
     formState: { errors },
   } = useForm<RenameAccountInput>({
     resolver: zodResolver(RenameAccountInputSchema),
-    defaultValues: { name: account.name },
+    defaultValues: { name: account.name, isSavingAccount: account.isSavingAccount },
   });
 
   return {

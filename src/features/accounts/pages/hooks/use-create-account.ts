@@ -23,7 +23,7 @@ export const useCreateAccount = () => {
     formState: { errors },
   } = useForm<CreateAccountInput>({
     resolver: zodResolver(CreateAccountInputSchema),
-    defaultValues: { name: "" },
+    defaultValues: { name: "", isSavingAccount: false },
   });
 
   const onSubmit = (input: CreateAccountInput) => {
