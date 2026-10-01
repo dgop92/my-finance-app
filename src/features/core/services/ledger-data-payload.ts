@@ -13,7 +13,8 @@ export function serializeLedgerDataPayload(payload: LedgerDataPayload): string {
 }
 
 // Structural check only, per spec: presence and array-ness of all three keys.
-// Individual record shapes are trusted once that check passes.
+// Accounts are then parsed with AccountSchema (applies field defaults); ledger
+// entries and expenses are trusted once that check passes.
 export function parseLedgerDataPayload(raw: unknown): LedgerDataPayload {
   if (
     typeof raw !== "object" ||
