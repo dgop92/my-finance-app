@@ -11,7 +11,7 @@ export const CreateAccountForm = () => {
   } = useCreateAccount();
 
   return (
-    <form onSubmit={handleFormSubmit} className="flex items-end gap-4">
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
       <div className="grid gap-1.5">
         <Label htmlFor="account-name">Account name</Label>
         <Input
@@ -27,7 +27,7 @@ export const CreateAccountForm = () => {
           </p>
         )}
       </div>
-      <div className="flex items-center gap-2 h-9">
+      <div className="flex items-center gap-2 sm:h-9">
         <input
           id="account-is-saving-account"
           type="checkbox"
@@ -36,7 +36,9 @@ export const CreateAccountForm = () => {
         />
         <Label htmlFor="account-is-saving-account">Savings account</Label>
       </div>
-      <Button type="submit">Create account</Button>
+      <Button type="submit" className="w-full sm:w-auto">
+        Create account
+      </Button>
     </form>
   );
 };
