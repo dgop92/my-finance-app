@@ -7,21 +7,21 @@ import { accountRepository } from "@/features/accounts/repositories/repository.f
 
 // The edit form always submits both fields, unlike UpdateAccountInputSchema's
 // optional fields (which also cover archiving), so pick and require them.
-const RenameAccountInputSchema = UpdateAccountInputSchema.pick({
+const UpdateAccountFormSchema = UpdateAccountInputSchema.pick({
   name: true,
   isSavingAccount: true,
 }).required();
-type RenameAccountInput = z.infer<typeof RenameAccountInputSchema>;
+type UpdateAccountFormValues = z.infer<typeof UpdateAccountFormSchema>;
 
-export interface UseRenameAccountArgs {
+export interface UseUpdateAccountArgs {
   account: Account;
   onDone: () => void;
 }
 
-export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
+export const useUpdateAccount = ({ account, onDone }: UseUpdateAccountArgs) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: (input: RenameAccountInput) =>
+    mutationFn: (input: UpdateAccountFormValues) =>
       accountRepository.update(account.id, {
         name: input.name,
         isSavingAccount: input.isSavingAccount,
@@ -34,15 +34,17 @@ export const useRenameAccount = ({ account, onDone }: UseRenameAccountArgs) => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
-  } = useForm<RenameAccountInput>({
-    resolver: zodResolver(RenameAccountInputSchema),
+  } = useForm<UpdateAccountFormValues>({
+    resolver: zodResolver(UpdateAccountFormSchema),
     defaultValues: { name: account.name, isSavingAccount: account.isSavingAccount },
   });
 
   return {
     register,
+    control,
     handleFormSubmit: handleSubmit((input) => mutation.mutate(input)),
     formState: { errors },
   };

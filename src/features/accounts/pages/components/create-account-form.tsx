@@ -1,11 +1,14 @@
+import { Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useCreateAccount } from "../hooks/use-create-account";
 
 export const CreateAccountForm = () => {
   const {
     register,
+    control,
     handleFormSubmit,
     formState: { errors },
   } = useCreateAccount();
@@ -28,11 +31,16 @@ export const CreateAccountForm = () => {
         )}
       </div>
       <div className="flex items-center gap-2 sm:h-9">
-        <input
-          id="account-is-saving-account"
-          type="checkbox"
-          className="size-4"
-          {...register("isSavingAccount")}
+        <Controller
+          name="isSavingAccount"
+          control={control}
+          render={({ field }) => (
+            <Switch
+              id="account-is-saving-account"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
         />
         <Label htmlFor="account-is-saving-account">Savings account</Label>
       </div>

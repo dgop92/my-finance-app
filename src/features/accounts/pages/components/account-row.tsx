@@ -1,11 +1,13 @@
 import { useState } from "react";
+import { Controller } from "react-hook-form";
 import { Account } from "@/features/core/entities/account";
 import { formatCurrency } from "@/lib/formatters";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { useRenameAccount } from "../hooks/use-rename-account";
+import { useUpdateAccount } from "../hooks/use-update-account";
 import { useArchiveAccount } from "../hooks/use-archive-account";
 
 interface AccountRowProps {
@@ -15,7 +17,7 @@ interface AccountRowProps {
 
 export const AccountRow = ({ account, balance }: AccountRowProps) => {
   const [isRenaming, setIsRenaming] = useState(false);
-  const { register, handleFormSubmit, formState } = useRenameAccount({
+  const { register, control, handleFormSubmit, formState } = useUpdateAccount({
     account,
     onDone: () => setIsRenaming(false),
   });
@@ -27,12 +29,17 @@ export const AccountRow = ({ account, balance }: AccountRowProps) => {
         <form onSubmit={handleFormSubmit} className="flex flex-col gap-3">
           <Input {...register("name")} aria-label={`Rename ${account.name}`} autoFocus />
           <div className="flex items-center gap-2">
-            <input
-              id={`savings-${account.id}`}
-              type="checkbox"
-              className="size-4"
-              aria-label={`Savings account ${account.name}`}
-              {...register("isSavingAccount")}
+            <Controller
+              name="isSavingAccount"
+              control={control}
+              render={({ field }) => (
+                <Switch
+                  id={`savings-${account.id}`}
+                  aria-label={`Savings account ${account.name}`}
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
             />
             <Label htmlFor={`savings-${account.id}`}>Savings account</Label>
           </div>

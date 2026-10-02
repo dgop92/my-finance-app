@@ -18,6 +18,7 @@ export const useCreateAccount = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -32,6 +33,7 @@ export const useCreateAccount = () => {
 
   return {
     register,
+    control,
     handleFormSubmit: handleSubmit(onSubmit),
     formState: { errors },
   };
