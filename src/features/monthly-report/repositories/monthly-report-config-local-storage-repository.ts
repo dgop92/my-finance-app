@@ -3,6 +3,10 @@ import { MonthlyReportConfigRepository } from "./definitions/monthly-report-conf
 
 const MONTHLY_REPORT_CONFIGS_STORAGE_KEY = "financeApp:monthlyReportConfigs";
 
+function saveConfigs(configs: Record<string, MonthlyReportConfig>): void {
+  localStorage.setItem(MONTHLY_REPORT_CONFIGS_STORAGE_KEY, JSON.stringify(configs));
+}
+
 function loadConfigs(): Record<string, MonthlyReportConfig> {
   const raw = localStorage.getItem(MONTHLY_REPORT_CONFIGS_STORAGE_KEY);
   if (!raw) {
@@ -19,10 +23,15 @@ export class MonthlyReportConfigLocalStorageRepository implements MonthlyReportC
 
   async save(config: MonthlyReportConfig): Promise<MonthlyReportConfig> {
     const parsed = MonthlyReportConfigSchema.parse(config);
-    localStorage.setItem(
-      MONTHLY_REPORT_CONFIGS_STORAGE_KEY,
-      JSON.stringify({ ...loadConfigs(), [parsed.monthKey]: parsed })
-    );
+    saveConfigs({ ...loadConfigs(), [parsed.monthKey]: parsed });
     return parsed;
+  }
+
+  async getAll(): Promise<MonthlyReportConfig[]> {
+    return Object.values(loadConfigs()).map((config) => MonthlyReportConfigSchema.parse(config));
+  }
+
+  async replaceAll(configs: MonthlyReportConfig[]): Promise<void> {
+    saveConfigs(Object.fromEntries(configs.map((config) => [config.monthKey, config])));
   }
 }

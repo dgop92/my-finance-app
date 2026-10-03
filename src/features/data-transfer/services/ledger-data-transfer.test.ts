@@ -6,6 +6,8 @@ import { InMemoryExpenseRepository } from "@/features/expenses/repositories/in-m
 import { ExpenseRepository } from "@/features/expenses/repositories/definitions/expense-repository";
 import { InMemorySettingsRepository } from "@/features/settings/repositories/in-memory-settings-repository";
 import { SettingsRepository } from "@/features/settings/repositories/definitions/settings-repository";
+import { InMemoryMonthlyReportConfigRepository } from "@/features/monthly-report/repositories/in-memory-monthly-report-config-repository";
+import { MonthlyReportConfigRepository } from "@/features/monthly-report/repositories/definitions/monthly-report-config-repository";
 import { exportLedgerData, importLedgerData } from "./ledger-data-transfer";
 
 class FailingReplaceAllLedgerEntryRepository
@@ -35,12 +37,30 @@ class FailingUpdateSettingsRepository
   }
 }
 
+class FailingReplaceAllMonthlyReportConfigRepository
+  extends InMemoryMonthlyReportConfigRepository
+  implements MonthlyReportConfigRepository
+{
+  replaceAll(): Promise<void> {
+    return Promise.reject(new Error("storage write failed"));
+  }
+}
+
+const SEPTEMBER_CONFIG = {
+  monthKey: "2026-09",
+  netSalaryOverride: 6_000_000,
+  manualOtherIncome: 250_000,
+  savingAccountDepositThreshold: 500_000,
+  automaticInterestEnabled: false,
+};
+
 function buildRepositories() {
   return {
     accountRepository: new InMemoryAccountRepository(),
     ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
     expenseRepository: new InMemoryExpenseRepository(),
     settingsRepository: new InMemorySettingsRepository(),
+    monthlyReportConfigRepository: new InMemoryMonthlyReportConfigRepository(),
   };
 }
 
@@ -70,6 +90,15 @@ describe("exportLedgerData", () => {
     expect(payload.ledgerEntries).toHaveLength(1);
     expect(payload.expenses).toHaveLength(1);
     expect(payload.settings).toEqual({ netSalary: 4_000_000 });
+  });
+
+  it("includes every saved monthly report config", async () => {
+    const repositories = buildRepositories();
+    await repositories.monthlyReportConfigRepository.save(SEPTEMBER_CONFIG);
+
+    const payload = await exportLedgerData(repositories);
+
+    expect(payload.monthlyReportConfigs).toEqual([SEPTEMBER_CONFIG]);
   });
 });
 
@@ -246,6 +275,7 @@ describe("importLedgerData", () => {
       ledgerEntryRepository: new FailingReplaceAllLedgerEntryRepository(),
       expenseRepository: new InMemoryExpenseRepository(),
       settingsRepository: new InMemorySettingsRepository(),
+      monthlyReportConfigRepository: new InMemoryMonthlyReportConfigRepository(),
     };
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
 
@@ -272,6 +302,7 @@ describe("importLedgerData", () => {
       ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
       expenseRepository: new FailingReplaceAllExpenseRepository(),
       settingsRepository: new InMemorySettingsRepository(),
+      monthlyReportConfigRepository: new InMemoryMonthlyReportConfigRepository(),
     };
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
     const existingLedgerEntry = await repositories.ledgerEntryRepository.create({
@@ -324,6 +355,7 @@ describe("importLedgerData", () => {
       ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
       expenseRepository: new InMemoryExpenseRepository(),
       settingsRepository: new FailingUpdateSettingsRepository(),
+      monthlyReportConfigRepository: new InMemoryMonthlyReportConfigRepository(),
     };
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
     const existingLedgerEntry = await repositories.ledgerEntryRepository.create({
@@ -376,5 +408,71 @@ describe("importLedgerData", () => {
     expect(accounts).toEqual([existingAccount]);
     expect(ledgerEntries).toEqual([existingLedgerEntry]);
     expect(expenses).toEqual([existingExpense]);
+  });
+
+  it("fully replaces existing monthly report configs with the imported ones", async () => {
+    const repositories = buildRepositories();
+    await repositories.monthlyReportConfigRepository.save({ ...SEPTEMBER_CONFIG, monthKey: "2026-01" });
+
+    await importLedgerData(
+      {
+        accounts: [],
+        ledgerEntries: [],
+        expenses: [],
+        settings: { netSalary: 1 },
+        monthlyReportConfigs: [SEPTEMBER_CONFIG],
+      },
+      repositories
+    );
+
+    expect(await repositories.monthlyReportConfigRepository.getAll()).toEqual([SEPTEMBER_CONFIG]);
+  });
+
+  it("rejects an invalid monthly report config and leaves stored data untouched", async () => {
+    const repositories = buildRepositories();
+    await repositories.monthlyReportConfigRepository.save(SEPTEMBER_CONFIG);
+
+    await expect(
+      importLedgerData(
+        {
+          accounts: [],
+          ledgerEntries: [],
+          expenses: [],
+          settings: { netSalary: 1 },
+          monthlyReportConfigs: [{ monthKey: "2026-02", manualOtherIncome: -1 }],
+        },
+        repositories
+      )
+    ).rejects.toThrow();
+
+    expect(await repositories.monthlyReportConfigRepository.getAll()).toEqual([SEPTEMBER_CONFIG]);
+    expect(await repositories.settingsRepository.get()).toEqual({ netSalary: 0 });
+  });
+
+  it("rolls back every other write if the monthly report configs write fails", async () => {
+    const repositories = {
+      ...buildRepositories(),
+      monthlyReportConfigRepository: new FailingReplaceAllMonthlyReportConfigRepository(),
+    };
+    const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
+    await repositories.settingsRepository.update({ netSalary: 2_000_000 });
+
+    await expect(
+      importLedgerData(
+        {
+          accounts: [
+            { id: "acc-1", name: "New account", createdAt: "2026-01-01T00:00:00.000Z", archived: false },
+          ],
+          ledgerEntries: [],
+          expenses: [],
+          settings: { netSalary: 9_000_000 },
+          monthlyReportConfigs: [SEPTEMBER_CONFIG],
+        },
+        repositories
+      )
+    ).rejects.toThrow("storage write failed");
+
+    expect(await repositories.accountRepository.getMany(true)).toEqual([existingAccount]);
+    expect(await repositories.settingsRepository.get()).toEqual({ netSalary: 2_000_000 });
   });
 });

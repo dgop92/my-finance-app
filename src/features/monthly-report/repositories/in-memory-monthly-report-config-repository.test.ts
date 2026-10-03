@@ -40,4 +40,24 @@ describe("InMemoryMonthlyReportConfigRepository", () => {
 
     expect(await repository.get("2026-09")).toEqual(updated);
   });
+
+  it("lists every saved config", async () => {
+    const repository = new InMemoryMonthlyReportConfigRepository();
+    const august: MonthlyReportConfig = { ...SEPTEMBER, monthKey: "2026-08" };
+    await repository.save(SEPTEMBER);
+    await repository.save(august);
+
+    expect(await repository.getAll()).toEqual([SEPTEMBER, august]);
+  });
+
+  it("replaces all saved configs, dropping the ones not provided", async () => {
+    const repository = new InMemoryMonthlyReportConfigRepository();
+    await repository.save(SEPTEMBER);
+    const august: MonthlyReportConfig = { ...SEPTEMBER, monthKey: "2026-08" };
+
+    await repository.replaceAll([august]);
+
+    expect(await repository.getAll()).toEqual([august]);
+    expect(await repository.get("2026-09")).toBeUndefined();
+  });
 });

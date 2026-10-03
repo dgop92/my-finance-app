@@ -12,4 +12,13 @@ export class InMemoryMonthlyReportConfigRepository implements MonthlyReportConfi
     this.configs.set(config.monthKey, config);
     return Promise.resolve(config);
   }
+
+  getAll(): Promise<MonthlyReportConfig[]> {
+    return Promise.resolve([...this.configs.values()]);
+  }
+
+  replaceAll(configs: MonthlyReportConfig[]): Promise<void> {
+    this.configs = new Map(configs.map((config) => [config.monthKey, config]));
+    return Promise.resolve();
+  }
 }

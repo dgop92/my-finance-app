@@ -14,6 +14,21 @@ test("exports data then re-imports it, overwriting local mutations", async ({ pa
   await addLedgerEntry(page, { accountName, amount: "15000" });
   await expect(page.getByRole("listitem").filter({ hasText: accountName })).toBeVisible();
 
+  await page.evaluate(() =>
+    localStorage.setItem(
+      "financeApp:monthlyReportConfigs",
+      JSON.stringify({
+        "2026-01": {
+          monthKey: "2026-01",
+          netSalaryOverride: 6000000,
+          manualOtherIncome: 250000,
+          savingAccountDepositThreshold: 500000,
+          automaticInterestEnabled: false,
+        },
+      })
+    )
+  );
+
   await page.goto(PATHS.DATA_TRANSFER);
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Export data" }).click();
@@ -26,9 +41,12 @@ test("exports data then re-imports it, overwriting local mutations", async ({ pa
   const exportedPayload = JSON.parse(exportedContent.toString("utf-8"));
   expect(exportedPayload.accounts).toHaveLength(1);
   expect(exportedPayload.ledgerEntries).toHaveLength(1);
+  expect(exportedPayload.monthlyReportConfigs).toHaveLength(1);
+  expect(exportedPayload.monthlyReportConfigs[0]).toMatchObject({ monthKey: "2026-01", netSalaryOverride: 6000000 });
 
   await page.goto(PATHS.ACCOUNTS);
   await createAccount(page, mutationAccountName);
+  await page.evaluate(() => localStorage.removeItem("financeApp:monthlyReportConfigs"));
 
   await page.goto(PATHS.DATA_TRANSFER);
   await page
@@ -45,4 +63,11 @@ test("exports data then re-imports it, overwriting local mutations", async ({ pa
   const entryRow = page.getByRole("listitem").filter({ hasText: accountName });
   await expect(entryRow).toHaveCount(1);
   await expect(entryRow).toContainText("15.000");
+
+  const restoredConfigs = await page.evaluate(() => localStorage.getItem("financeApp:monthlyReportConfigs"));
+  expect(JSON.parse(restoredConfigs ?? "{}")["2026-01"]).toMatchObject({
+    netSalaryOverride: 6000000,
+    manualOtherIncome: 250000,
+    automaticInterestEnabled: false,
+  });
 });
