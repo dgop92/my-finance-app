@@ -18,12 +18,13 @@ export const useCreateAccount = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<CreateAccountInput>({
     resolver: zodResolver(CreateAccountInputSchema),
-    defaultValues: { name: "" },
+    defaultValues: { name: "", isSavingAccount: false },
   });
 
   const onSubmit = (input: CreateAccountInput) => {
@@ -32,6 +33,7 @@ export const useCreateAccount = () => {
 
   return {
     register,
+    control,
     handleFormSubmit: handleSubmit(onSubmit),
     formState: { errors },
   };

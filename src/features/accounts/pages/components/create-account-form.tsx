@@ -1,17 +1,20 @@
+import { Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { useCreateAccount } from "../hooks/use-create-account";
 
 export const CreateAccountForm = () => {
   const {
     register,
+    control,
     handleFormSubmit,
     formState: { errors },
   } = useCreateAccount();
 
   return (
-    <form onSubmit={handleFormSubmit} className="flex items-end gap-2">
+    <form onSubmit={handleFormSubmit} className="flex flex-col gap-4 sm:flex-row sm:items-end">
       <div className="grid gap-1.5">
         <Label htmlFor="account-name">Account name</Label>
         <Input
@@ -27,7 +30,23 @@ export const CreateAccountForm = () => {
           </p>
         )}
       </div>
-      <Button type="submit">Create account</Button>
+      <div className="flex items-center gap-2 sm:h-9">
+        <Controller
+          name="isSavingAccount"
+          control={control}
+          render={({ field }) => (
+            <Switch
+              id="account-is-saving-account"
+              checked={field.value}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <Label htmlFor="account-is-saving-account">Savings account</Label>
+      </div>
+      <Button type="submit" className="w-full sm:w-auto">
+        Create account
+      </Button>
     </form>
   );
 };
