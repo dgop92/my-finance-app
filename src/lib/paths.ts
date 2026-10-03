@@ -6,4 +6,5 @@ export const PATHS = {
   BATCH_MODE: "/batch-mode",
   DATA_TRANSFER: "/import-export",
   ANALYTICS: "/analytics",
+  SETTINGS: "/settings",
 };
