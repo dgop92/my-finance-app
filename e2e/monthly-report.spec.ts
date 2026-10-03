@@ -36,12 +36,14 @@ async function seedPastMonths(page: Page, netSalary: number) {
   }, netSalary);
 }
 
-test("monthly report shows the analysis for the latest closed month and only offers past months", async ({
-  page,
-}) => {
+test("monthly report defaults to the current month and also offers past months", async ({ page }) => {
   await seedPastMonths(page, 5000000);
 
   await page.goto(PATHS.MONTHLY_REPORT);
+
+  await page.getByRole("combobox", { name: "Month" }).click();
+  await expect(page.getByRole("option")).toHaveCount(3);
+  await page.getByRole("option").nth(1).click();
 
   // Total saved: 500.000 deposited last month. Known expenses: 500.000 from two months ago.
   // Unknown expenses: 5.000.000 + 0 - 500.000 - 500.000 = 4.000.000.
@@ -51,9 +53,6 @@ test("monthly report shows the analysis for the latest closed month and only off
   await expect(statTile(page, "Unknown Expenses").locator("span")).toHaveText(formatCurrency(4000000));
   await expect(page.getByText("Groceries")).toBeVisible();
   await expect(page.getByText("Known vs Unknown Expenses")).toBeVisible();
-
-  await page.getByRole("combobox", { name: "Month" }).click();
-  await expect(page.getByRole("option")).toHaveCount(2);
 });
 
 test("monthly report shows unexplained income with a warning instead of the chart when unknown expenses are negative", async ({
@@ -62,6 +61,9 @@ test("monthly report shows unexplained income with a warning instead of the char
   await seedPastMonths(page, 0);
 
   await page.goto(PATHS.MONTHLY_REPORT);
+
+  await page.getByRole("combobox", { name: "Month" }).click();
+  await page.getByRole("option").nth(1).click();
 
   // Unknown expenses: 0 + 0 - 500.000 - 500.000 = -1.000.000
   await expect(statTile(page, "Unexplained Income").locator("span")).toHaveText(formatCurrency(1000000));

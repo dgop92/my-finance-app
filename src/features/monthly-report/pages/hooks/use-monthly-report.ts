@@ -4,7 +4,7 @@ import { useExpenses } from "@/features/expenses/pages/hooks/use-expenses";
 import { useSettings } from "@/features/settings/pages/hooks/use-settings";
 import { useLedgerEntries } from "@/features/ledger-entries/pages/hooks/use-ledger-entries";
 import { computeOldestEntryDate } from "@/features/core/services/oldest-entry-date";
-import { listClosedMonths, monthKey } from "@/features/monthly-report/lib/closed-months";
+import { listReportMonths, monthKey } from "@/features/monthly-report/lib/report-months";
 import { useMonthlyReportConfig } from "./use-monthly-report-config";
 
 export const useMonthlyReport = (selectedKey: string | undefined) => {
@@ -15,17 +15,17 @@ export const useMonthlyReport = (selectedKey: string | undefined) => {
 
   const now = useMemo(() => new Date(), []);
 
-  const closedMonths = useMemo(() => {
+  const months = useMemo(() => {
     if (!entries || !expenses) return undefined;
 
     const dates = [computeOldestEntryDate(entries), ...expenses.map((expense) => expense.date)].filter(
       (date): date is Date => date !== null
     );
     const oldest = dates.length > 0 ? new Date(Math.min(...dates.map((date) => date.getTime()))) : undefined;
-    return listClosedMonths(now, oldest);
+    return listReportMonths(now, oldest);
   }, [entries, expenses, now]);
 
-  const selectedMonth = closedMonths?.find((month) => monthKey(month) === selectedKey) ?? closedMonths?.[0];
+  const selectedMonth = months?.find((month) => monthKey(month) === selectedKey) ?? months?.[0];
   const selectedMonthKey = selectedMonth ? monthKey(selectedMonth) : undefined;
 
   const { data: savedConfig, isPending: isConfigPending, error: configError } = useMonthlyReportConfig(selectedMonthKey);
@@ -36,7 +36,7 @@ export const useMonthlyReport = (selectedKey: string | undefined) => {
       : undefined;
 
   return {
-    closedMonths,
+    months,
     selectedMonth,
     selectedMonthKey,
     reportData,

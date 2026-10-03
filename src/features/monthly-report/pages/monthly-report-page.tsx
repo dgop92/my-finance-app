@@ -5,14 +5,14 @@ import { MonthlyReportContent } from "./components/monthly-report-content";
 
 export const MonthlyReportPage = () => {
   const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined);
-  const { closedMonths, selectedMonth, selectedMonthKey, reportData, isPending, error } = useMonthlyReport(selectedKey);
+  const { months, selectedMonth, selectedMonthKey, reportData, isPending, error } = useMonthlyReport(selectedKey);
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-2xl font-bold">Monthly Report</h1>
-        {closedMonths && selectedMonth && (
-          <MonthSelector months={closedMonths} value={selectedMonth} onChange={setSelectedKey} />
+        {months && selectedMonth && (
+          <MonthSelector months={months} value={selectedMonth} onChange={setSelectedKey} />
         )}
       </div>
 
