@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   ListChecks,
   Receipt,
+  Settings,
   Wallet,
 } from "lucide-react";
 import { PATHS } from "./paths";
@@ -50,5 +51,10 @@ export const navigationItems: NavigationItem[] = [
     name: "Analytics",
     path: PATHS.ANALYTICS,
     icon: BarChart3,
+  },
+  {
+    name: "Settings",
+    path: PATHS.SETTINGS,
+    icon: Settings,
   },
 ];

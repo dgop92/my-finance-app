@@ -2,6 +2,7 @@
 export * from "./entities/account";
 export * from "./entities/ledger-entry";
 export * from "./entities/expense";
+export * from "./entities/settings";
 
 // Service exports
 export * from "./services/ledger-balance";
