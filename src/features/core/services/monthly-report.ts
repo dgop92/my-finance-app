@@ -1,16 +1,11 @@
 import { Account } from "../entities/account";
 import { Expense, ExpenseType } from "../entities/expense";
 import { LedgerEntry } from "../entities/ledger-entry";
+import { DEFAULT_SAVING_ACCOUNT_DEPOSIT_THRESHOLD, MonthlyReportConfig } from "../entities/monthly-report-config";
 import { Settings } from "../entities/settings";
 import { endOfMonth } from "../lib/month-bucket";
 import { computeAccountBalance } from "./ledger-balance";
 
-// A savings-account deposit at or above this amount is treated as interest
-// rather than a regular transfer. Not yet configurable.
-export const INTEREST_THRESHOLD = 1_000_000;
-
-// Manual other income has no input yet, so it is always zero.
-const MANUAL_OTHER_INCOME = 0;
 
 // month is zero-based, matching Date#getMonth.
 export interface ReportMonth {
@@ -18,12 +13,15 @@ export interface ReportMonth {
   month: number;
 }
 
+export type MonthlyReportConfigInput = Partial<Omit<MonthlyReportConfig, "monthKey">>;
+
 export interface MonthlyReportInput {
   entries: LedgerEntry[];
   expenses: Expense[];
   accounts: Account[];
   settings: Settings;
   month: ReportMonth;
+  config?: MonthlyReportConfigInput;
 }
 
 export interface CategoryShare {
@@ -82,7 +80,7 @@ function computeCategoryBreakdown(expenses: Expense[], knownExpenses: number): C
 
 // Known expenses intentionally come from the month *before* the selected one;
 // total saved, net salary and interest all belong to the selected month itself.
-export function computeMonthlyReport({ entries, expenses, accounts, settings, month }: MonthlyReportInput): MonthlyReport {
+export function computeMonthlyReport({ entries, expenses, accounts, settings, month, config = {} }: MonthlyReportInput): MonthlyReport {
   const accountIds = new Set(accounts.map((account) => account.id));
   const previous = previousMonth(month);
 
@@ -95,18 +93,24 @@ export function computeMonthlyReport({ entries, expenses, accounts, settings, mo
 
   const savingAccountIds = new Set(accounts.filter((account) => account.isSavingAccount).map((account) => account.id));
   // debit = money in (see LedgerEntry sign convention), i.e. a deposit.
-  const interestFromSavings = entries
+  const {
+    netSalaryOverride,
+    manualOtherIncome = 0,
+    savingAccountDepositThreshold = DEFAULT_SAVING_ACCOUNT_DEPOSIT_THRESHOLD,
+    automaticInterestEnabled = true,
+  } = config;
+  const interestFromSavings = (automaticInterestEnabled ? entries : [])
     .filter(
       (entry) =>
         entry.type === "debit" &&
         savingAccountIds.has(entry.accountId) &&
-        entry.amount >= INTEREST_THRESHOLD &&
+        entry.amount >= savingAccountDepositThreshold &&
         isInMonth(entry.date, month)
     )
     .reduce((sum, entry) => sum + entry.amount, 0);
 
-  const netSalary = settings.netSalary;
-  const otherIncome = interestFromSavings + MANUAL_OTHER_INCOME;
+  const netSalary = netSalaryOverride ?? settings.netSalary;
+  const otherIncome = interestFromSavings + manualOtherIncome;
   const unknownExpenses = netSalary + otherIncome - knownExpenses - totalSaved;
 
   const splitTotal = knownExpenses + unknownExpenses;

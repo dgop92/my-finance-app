@@ -47,7 +47,7 @@ test("monthly report shows the analysis for the latest closed month and only off
   // Unknown expenses: 5.000.000 + 0 - 500.000 - 500.000 = 4.000.000.
   await expect(statTile(page, "Total Saved").locator("span")).toHaveText(formatCurrency(500000));
   await expect(statTile(page, "Net Salary").locator("span")).toHaveText(formatCurrency(5000000));
-  await expect(statTile(page, "Other Income (interest)").locator("span")).toHaveText(formatCurrency(0));
+  await expect(statTile(page, "Other Income").locator("span")).toHaveText(formatCurrency(0));
   await expect(statTile(page, "Unknown Expenses").locator("span")).toHaveText(formatCurrency(4000000));
   await expect(page.getByText("Groceries")).toBeVisible();
   await expect(page.getByText("Known vs Unknown Expenses")).toBeVisible();

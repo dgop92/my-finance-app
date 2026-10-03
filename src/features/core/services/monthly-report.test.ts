@@ -3,7 +3,8 @@ import { Account } from "../entities/account";
 import { Expense } from "../entities/expense";
 import { LedgerEntry } from "../entities/ledger-entry";
 import { Settings } from "../entities/settings";
-import { computeMonthlyReport, INTEREST_THRESHOLD, MonthlyReportInput } from "./monthly-report";
+import { DEFAULT_SAVING_ACCOUNT_DEPOSIT_THRESHOLD as INTEREST_THRESHOLD } from "../entities/monthly-report-config";
+import { computeMonthlyReport, MonthlyReportInput } from "./monthly-report";
 
 function makeEntry(overrides: Partial<LedgerEntry>): LedgerEntry {
   return {
@@ -237,6 +238,52 @@ describe("computeMonthlyReport", () => {
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings] }));
 
       expect(result.otherIncome).toBe(2_000_000);
+    });
+  });
+
+  describe("per-month config", () => {
+    const savings = makeAccount({ id: "savings", isSavingAccount: true });
+    const deposit = (amount: number) =>
+      makeEntry({ accountId: "savings", type: "debit", amount, date: new Date(2026, 8, 10) });
+
+    it("uses the net salary override instead of the settings net salary", () => {
+      const result = computeMonthlyReport(makeInput({ config: { netSalaryOverride: 6_500_000 } }));
+
+      expect(result.netSalary).toBe(6_500_000);
+    });
+
+    it("adds manual other income on top of interest", () => {
+      const result = computeMonthlyReport(
+        makeInput({ entries: [deposit(2_000_000)], accounts: [savings], config: { manualOtherIncome: 300_000 } })
+      );
+
+      expect(result.interestFromSavings).toBe(2_000_000);
+      expect(result.otherIncome).toBe(2_300_000);
+    });
+
+    it("counts deposits at or above a custom threshold as interest", () => {
+      const result = computeMonthlyReport(
+        makeInput({
+          entries: [deposit(400_000), deposit(100_000)],
+          accounts: [savings],
+          config: { savingAccountDepositThreshold: 400_000 },
+        })
+      );
+
+      expect(result.interestFromSavings).toBe(400_000);
+    });
+
+    it("ignores savings deposits when automatic interest is disabled but keeps manual income", () => {
+      const result = computeMonthlyReport(
+        makeInput({
+          entries: [deposit(2_000_000)],
+          accounts: [savings],
+          config: { automaticInterestEnabled: false, manualOtherIncome: 300_000 },
+        })
+      );
+
+      expect(result.interestFromSavings).toBe(0);
+      expect(result.otherIncome).toBe(300_000);
     });
   });
 

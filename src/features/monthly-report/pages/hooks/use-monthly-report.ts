@@ -3,9 +3,9 @@ import { useAccounts } from "@/features/accounts/pages/hooks/use-accounts";
 import { useExpenses } from "@/features/expenses/pages/hooks/use-expenses";
 import { useSettings } from "@/features/settings/pages/hooks/use-settings";
 import { useLedgerEntries } from "@/features/ledger-entries/pages/hooks/use-ledger-entries";
-import { computeMonthlyReport } from "@/features/core/services/monthly-report";
 import { computeOldestEntryDate } from "@/features/core/services/oldest-entry-date";
 import { listClosedMonths, monthKey } from "@/features/monthly-report/lib/closed-months";
+import { useMonthlyReportConfig } from "./use-monthly-report-config";
 
 export const useMonthlyReport = (selectedKey: string | undefined) => {
   const { data: entries, isPending: isEntriesPending, error: entriesError } = useLedgerEntries();
@@ -26,17 +26,26 @@ export const useMonthlyReport = (selectedKey: string | undefined) => {
   }, [entries, expenses, now]);
 
   const selectedMonth = closedMonths?.find((month) => monthKey(month) === selectedKey) ?? closedMonths?.[0];
+  const selectedMonthKey = selectedMonth ? monthKey(selectedMonth) : undefined;
 
-  const report = useMemo(() => {
-    if (!entries || !expenses || !accounts || !settings || !selectedMonth) return undefined;
-    return computeMonthlyReport({ entries, expenses, accounts, settings, month: selectedMonth });
-  }, [entries, expenses, accounts, settings, selectedMonth]);
+  const { data: savedConfig, isPending: isConfigPending, error: configError } = useMonthlyReportConfig(selectedMonthKey);
+
+  const reportData =
+    entries && expenses && accounts && settings && savedConfig !== undefined
+      ? { entries, expenses, accounts, settings, savedConfig: savedConfig ?? undefined }
+      : undefined;
 
   return {
     closedMonths,
     selectedMonth,
-    report,
-    isPending: isEntriesPending || isExpensesPending || isAccountsPending || isSettingsPending,
-    error: entriesError ?? expensesError ?? accountsError ?? settingsError,
+    selectedMonthKey,
+    reportData,
+    isPending:
+      isEntriesPending ||
+      isExpensesPending ||
+      isAccountsPending ||
+      isSettingsPending ||
+      (selectedMonthKey !== undefined && isConfigPending),
+    error: entriesError ?? expensesError ?? accountsError ?? settingsError ?? configError,
   };
 };
