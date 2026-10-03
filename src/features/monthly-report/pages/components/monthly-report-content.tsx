@@ -8,7 +8,7 @@ import { Settings } from "@/features/core/entities/settings";
 import { previousMonth, ReportMonth } from "@/features/core/services/monthly-report";
 import { expenseTypeToLabel } from "@/features/core/services/expense-type-label";
 import { StatTile } from "@/features/analytics/pages/components/stat-tile";
-import { formatReportMonth } from "@/features/monthly-report/lib/closed-months";
+import { formatReportMonth } from "@/features/monthly-report/lib/report-months";
 import { useMonthlyReportEditor } from "../hooks/use-monthly-report-editor";
 import { MonthlyReportConfigForm } from "./monthly-report-config-form";
 import { PercentagePieChart } from "./percentage-pie-chart";
@@ -55,6 +55,7 @@ export const MonthlyReportContent = ({ month, monthKey, ...data }: MonthlyReport
           title={hasUnexplainedIncome ? "Unexplained Income" : "Unknown Expenses"}
           value={formatCurrency(Math.abs(report.unknownExpenses))}
         />
+        <StatTile title="Total Spent" value={formatCurrency(report.totalSpent)} />
       </div>
 
       {hasUnexplainedIncome && (

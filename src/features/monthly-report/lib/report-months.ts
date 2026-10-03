@@ -1,17 +1,19 @@
 import { MONTH_LABEL_FORMAT } from "@/features/core/lib/month-bucket";
 import { ReportMonth } from "@/features/core/services/monthly-report";
 
-// Newest first. Only months strictly before now's calendar month are returned,
-// reaching back to the month of oldestDate; with no data (or only current-month
-// data) the previous month alone is offered so the picker is never empty.
-export function listClosedMonths(now: Date, oldestDate: Date | undefined): ReportMonth[] {
-  const lastClosed = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const first = oldestDate ? new Date(oldestDate.getFullYear(), oldestDate.getMonth(), 1) : lastClosed;
+export const REPORT_MONTH_LIMIT = 5;
+
+// Newest first, starting with the current (in-progress) month and reaching
+// back to the month of oldestDate, capped at `limit` entries so lifetime data
+// doesn't flood the picker.
+export function listReportMonths(now: Date, oldestDate: Date | undefined, limit = REPORT_MONTH_LIMIT): ReportMonth[] {
+  const current = new Date(now.getFullYear(), now.getMonth(), 1);
+  const first = oldestDate ? new Date(oldestDate.getFullYear(), oldestDate.getMonth(), 1) : current;
 
   const months: ReportMonth[] = [];
   for (
-    let cursor = lastClosed;
-    cursor >= first || months.length === 0;
+    let cursor = current;
+    (cursor >= first || months.length === 0) && months.length < limit;
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1)
   ) {
     months.push({ year: cursor.getFullYear(), month: cursor.getMonth() });

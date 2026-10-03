@@ -33,7 +33,7 @@ async function seedPastMonths(page: Page) {
 
 async function selectOlderMonth(page: Page) {
   await page.getByRole("combobox", { name: "Month" }).click();
-  await page.getByRole("option").nth(1).click();
+  await page.getByRole("option").nth(2).click();
 }
 
 test("edits a month's report inputs, saves them, and reloads them when the month is selected again", async ({

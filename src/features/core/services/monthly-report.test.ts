@@ -341,4 +341,24 @@ describe("computeMonthlyReport", () => {
       expect(result.knownVsUnknown).toBeNull();
     });
   });
+
+  describe("total spent", () => {
+    it("sums known and unknown expenses", () => {
+      const expenses = [makeExpense({ amount: 1_000_000, date: new Date(2026, 7, 10) })];
+
+      const result = computeMonthlyReport(makeInput({ expenses, settings: { netSalary: 4_000_000 } }));
+
+      // known = 1_000_000, unknown = 4_000_000 - 1_000_000 - 0 = 3_000_000
+      expect(result.totalSpent).toBe(4_000_000);
+    });
+
+    it("still sums known and unknown expenses when unknown expenses are negative", () => {
+      const entries = [makeEntry({ type: "debit", amount: 6_000_000, date: new Date(2026, 8, 10) })];
+
+      const result = computeMonthlyReport(makeInput({ entries }));
+
+      // known = 0, unknown = 5_000_000 - 0 - 6_000_000 = -1_000_000
+      expect(result.totalSpent).toBe(-1_000_000);
+    });
+  });
 });

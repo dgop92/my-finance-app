@@ -43,6 +43,7 @@ export interface MonthlyReport {
   interestFromSavings: number;
   otherIncome: number;
   unknownExpenses: number;
+  totalSpent: number;
   // Null when unknownExpenses is negative (shown as unexplained income
   // instead) or when there is nothing to split (known and unknown are both 0).
   knownVsUnknown: KnownVsUnknown | null;
@@ -130,6 +131,7 @@ export function computeMonthlyReport({ entries, expenses, accounts, settings, mo
     interestFromSavings,
     otherIncome,
     unknownExpenses,
+    totalSpent: splitTotal,
     knownVsUnknown,
   };
 }
