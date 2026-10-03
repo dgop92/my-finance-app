@@ -4,6 +4,8 @@ import { InMemoryLedgerEntryRepository } from "@/features/ledger-entries/reposit
 import { LedgerEntryRepository } from "@/features/ledger-entries/repositories/definitions/ledger-entry-repository";
 import { InMemoryExpenseRepository } from "@/features/expenses/repositories/in-memory-expense-repository";
 import { ExpenseRepository } from "@/features/expenses/repositories/definitions/expense-repository";
+import { InMemorySettingsRepository } from "@/features/settings/repositories/in-memory-settings-repository";
+import { SettingsRepository } from "@/features/settings/repositories/definitions/settings-repository";
 import { exportLedgerData, importLedgerData } from "./ledger-data-transfer";
 
 class FailingReplaceAllLedgerEntryRepository
@@ -24,16 +26,26 @@ class FailingReplaceAllExpenseRepository
   }
 }
 
+class FailingUpdateSettingsRepository
+  extends InMemorySettingsRepository
+  implements SettingsRepository
+{
+  update(): Promise<never> {
+    return Promise.reject(new Error("storage write failed"));
+  }
+}
+
 function buildRepositories() {
   return {
     accountRepository: new InMemoryAccountRepository(),
     ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
     expenseRepository: new InMemoryExpenseRepository(),
+    settingsRepository: new InMemorySettingsRepository(),
   };
 }
 
 describe("exportLedgerData", () => {
-  it("includes archived accounts, all ledger entries, and all expenses", async () => {
+  it("includes archived accounts, all ledger entries, all expenses, and settings", async () => {
     const repositories = buildRepositories();
     const account = await repositories.accountRepository.create({ name: "Checking" });
     await repositories.accountRepository.archive(account.id);
@@ -49,6 +61,7 @@ describe("exportLedgerData", () => {
       type: "groceries",
       date: new Date("2026-01-01"),
     });
+    await repositories.settingsRepository.update({ netSalary: 4_000_000 });
 
     const payload = await exportLedgerData(repositories);
 
@@ -56,6 +69,7 @@ describe("exportLedgerData", () => {
     expect(payload.accounts[0].archived).toBe(true);
     expect(payload.ledgerEntries).toHaveLength(1);
     expect(payload.expenses).toHaveLength(1);
+    expect(payload.settings).toEqual({ netSalary: 4_000_000 });
   });
 });
 
@@ -93,6 +107,7 @@ describe("importLedgerData", () => {
           type: "groceries",
         },
       ],
+      settings: { netSalary: 3_500_000 },
     };
 
     await importLedgerData(payload, repositories);
@@ -100,6 +115,7 @@ describe("importLedgerData", () => {
     const accounts = await repositories.accountRepository.getMany(true);
     const ledgerEntries = await repositories.ledgerEntryRepository.getMany();
     const expenses = await repositories.expenseRepository.getMany();
+    const settings = await repositories.settingsRepository.get();
 
     expect(accounts).toEqual([
       {
@@ -122,6 +138,7 @@ describe("importLedgerData", () => {
         date: new Date(payload.expenses[0].date),
       },
     ]);
+    expect(settings).toEqual(payload.settings);
   });
 
   it("rejects a payload missing the accounts array and leaves stored data untouched", async () => {
@@ -129,7 +146,10 @@ describe("importLedgerData", () => {
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
 
     await expect(
-      importLedgerData({ ledgerEntries: [], expenses: [] }, repositories)
+      importLedgerData(
+        { ledgerEntries: [], expenses: [], settings: { netSalary: 1 } },
+        repositories
+      )
     ).rejects.toThrow();
 
     const accounts = await repositories.accountRepository.getMany(true);
@@ -148,7 +168,7 @@ describe("importLedgerData", () => {
 
     await expect(
       importLedgerData(
-        { accounts: [], ledgerEntries: "not-an-array", expenses: [] },
+        { accounts: [], ledgerEntries: "not-an-array", expenses: [], settings: { netSalary: 1 } },
         repositories
       )
     ).rejects.toThrow();
@@ -170,7 +190,10 @@ describe("importLedgerData", () => {
     });
 
     await expect(
-      importLedgerData({ accounts: [], ledgerEntries: [] }, repositories)
+      importLedgerData(
+        { accounts: [], ledgerEntries: [], settings: { netSalary: 1 } },
+        repositories
+      )
     ).rejects.toThrow();
 
     const accounts = await repositories.accountRepository.getMany(true);
@@ -191,7 +214,7 @@ describe("importLedgerData", () => {
 
     await expect(
       importLedgerData(
-        { accounts: [], ledgerEntries: [], expenses: "not-an-array" },
+        { accounts: [], ledgerEntries: [], expenses: "not-an-array", settings: { netSalary: 1 } },
         repositories
       )
     ).rejects.toThrow();
@@ -202,11 +225,27 @@ describe("importLedgerData", () => {
     expect(expenses).toEqual([existingExpense]);
   });
 
+  it("rejects a payload missing settings and leaves stored data untouched", async () => {
+    const repositories = buildRepositories();
+    const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
+    await repositories.settingsRepository.update({ netSalary: 2_000_000 });
+
+    await expect(
+      importLedgerData({ accounts: [], ledgerEntries: [], expenses: [] }, repositories)
+    ).rejects.toThrow();
+
+    const accounts = await repositories.accountRepository.getMany(true);
+    const settings = await repositories.settingsRepository.get();
+    expect(accounts).toEqual([existingAccount]);
+    expect(settings).toEqual({ netSalary: 2_000_000 });
+  });
+
   it("rolls back the accounts write if the ledger-entries write fails", async () => {
     const repositories = {
       accountRepository: new InMemoryAccountRepository(),
       ledgerEntryRepository: new FailingReplaceAllLedgerEntryRepository(),
       expenseRepository: new InMemoryExpenseRepository(),
+      settingsRepository: new InMemorySettingsRepository(),
     };
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
 
@@ -216,6 +255,7 @@ describe("importLedgerData", () => {
       ],
       ledgerEntries: [],
       expenses: [],
+      settings: { netSalary: 1 },
     };
 
     await expect(importLedgerData(payload, repositories)).rejects.toThrow(
@@ -231,6 +271,7 @@ describe("importLedgerData", () => {
       accountRepository: new InMemoryAccountRepository(),
       ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
       expenseRepository: new FailingReplaceAllExpenseRepository(),
+      settingsRepository: new InMemorySettingsRepository(),
     };
     const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
     const existingLedgerEntry = await repositories.ledgerEntryRepository.create({
@@ -264,6 +305,7 @@ describe("importLedgerData", () => {
           type: "other",
         },
       ],
+      settings: { netSalary: 1 },
     };
 
     await expect(importLedgerData(payload, repositories)).rejects.toThrow(
@@ -274,5 +316,65 @@ describe("importLedgerData", () => {
     const ledgerEntries = await repositories.ledgerEntryRepository.getMany();
     expect(accounts).toEqual([existingAccount]);
     expect(ledgerEntries).toEqual([existingLedgerEntry]);
+  });
+
+  it("rolls back accounts, ledger entries, and expenses if the settings write fails", async () => {
+    const repositories = {
+      accountRepository: new InMemoryAccountRepository(),
+      ledgerEntryRepository: new InMemoryLedgerEntryRepository(),
+      expenseRepository: new InMemoryExpenseRepository(),
+      settingsRepository: new FailingUpdateSettingsRepository(),
+    };
+    const existingAccount = await repositories.accountRepository.create({ name: "Checking" });
+    const existingLedgerEntry = await repositories.ledgerEntryRepository.create({
+      accountId: existingAccount.id,
+      type: "credit",
+      amount: 100,
+      date: new Date("2026-01-01"),
+    });
+    const existingExpense = await repositories.expenseRepository.create({
+      amount: 100,
+      notes: "Coffee",
+      type: "fast_food",
+      date: new Date("2026-01-01"),
+    });
+
+    const payload = {
+      accounts: [
+        { id: "acc-1", name: "New account", createdAt: "2026-01-01T00:00:00.000Z", archived: false },
+      ],
+      ledgerEntries: [
+        {
+          id: "entry-1",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          accountId: "acc-1",
+          type: "debit",
+          amount: 500,
+          date: "2026-01-01T00:00:00.000Z",
+        },
+      ],
+      expenses: [
+        {
+          id: "expense-1",
+          createdAt: "2026-01-01T00:00:00.000Z",
+          date: "2026-01-01T00:00:00.000Z",
+          amount: 200,
+          notes: "New expense",
+          type: "other",
+        },
+      ],
+      settings: { netSalary: 9_000_000 },
+    };
+
+    await expect(importLedgerData(payload, repositories)).rejects.toThrow(
+      "storage write failed"
+    );
+
+    const accounts = await repositories.accountRepository.getMany(true);
+    const ledgerEntries = await repositories.ledgerEntryRepository.getMany();
+    const expenses = await repositories.expenseRepository.getMany();
+    expect(accounts).toEqual([existingAccount]);
+    expect(ledgerEntries).toEqual([existingLedgerEntry]);
+    expect(expenses).toEqual([existingExpense]);
   });
 });

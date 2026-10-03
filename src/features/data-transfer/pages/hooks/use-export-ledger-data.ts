@@ -2,6 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { accountRepository } from "@/features/accounts/repositories/repository.factory";
 import { ledgerEntryRepository } from "@/features/ledger-entries/repositories/repository.factory";
 import { expenseRepository } from "@/features/expenses/repositories/repository.factory";
+import { settingsRepository } from "@/features/settings/repositories/repository.factory";
 import { downloadJsonFile } from "@/lib/download-json-file";
 import { exportLedgerData } from "@/features/data-transfer/services/ledger-data-transfer";
 
@@ -12,6 +13,7 @@ export const useExportLedgerData = () => {
         accountRepository,
         ledgerEntryRepository,
         expenseRepository,
+        settingsRepository,
       });
       const filename = `finance-app-data-${new Date().toISOString().split("T")[0]}.json`;
       downloadJsonFile(filename, payload);
