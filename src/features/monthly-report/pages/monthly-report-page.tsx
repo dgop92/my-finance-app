@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { TriangleAlert } from "lucide-react";
 import { formatCurrency } from "@/lib/formatters";
+import { previousMonth } from "@/features/core/services/monthly-report";
 import { expenseTypeToLabel } from "@/features/core/services/expense-type-label";
 import { StatTile } from "@/features/analytics/pages/components/stat-tile";
 import { useMonthlyReport } from "./hooks/use-monthly-report";
@@ -13,7 +14,7 @@ export const MonthlyReportPage = () => {
   const { closedMonths, selectedMonth, report, isPending, error } = useMonthlyReport(selectedKey);
 
   const previousMonthLabel = selectedMonth
-    ? formatReportMonth({ year: selectedMonth.year, month: selectedMonth.month - 1 })
+    ? formatReportMonth(previousMonth(selectedMonth))
     : undefined;
   const hasUnexplainedIncome = report !== undefined && report.unknownExpenses < 0;
 
@@ -84,7 +85,6 @@ export const MonthlyReportPage = () => {
                     percentage: report.knownVsUnknown.unknownPercentage,
                   },
                 ]}
-                emptyMessage=""
               />
             )}
           </div>

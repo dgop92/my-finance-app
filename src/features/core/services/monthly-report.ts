@@ -54,7 +54,7 @@ function startOfMonth(month: ReportMonth): Date {
   return new Date(month.year, month.month, 1);
 }
 
-function previousMonth(month: ReportMonth): ReportMonth {
+export function previousMonth(month: ReportMonth): ReportMonth {
   const date = new Date(month.year, month.month - 1, 1);
   return { year: date.getFullYear(), month: date.getMonth() };
 }

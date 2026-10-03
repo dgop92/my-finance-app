@@ -1,8 +1,7 @@
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ReportMonth } from "@/features/core/services/monthly-report";
-import { formatReportMonth } from "@/features/monthly-report/lib/closed-months";
-import { monthKey } from "../hooks/use-monthly-report";
+import { formatReportMonth, monthKey } from "@/features/monthly-report/lib/closed-months";
 
 interface MonthSelectorProps {
   months: ReportMonth[];

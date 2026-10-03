@@ -22,3 +22,7 @@ export function listClosedMonths(now: Date, oldestDate: Date | undefined): Repor
 export function formatReportMonth(month: ReportMonth): string {
   return MONTH_LABEL_FORMAT.format(new Date(month.year, month.month, 1));
 }
+
+export function monthKey(month: ReportMonth): string {
+  return `${month.year}-${month.month}`;
+}

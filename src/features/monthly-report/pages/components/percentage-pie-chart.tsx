@@ -2,6 +2,7 @@ import { Cell, Pie, PieChart } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { formatCurrency } from "@/lib/formatters";
+import { cn } from "@/lib/utils";
 
 // Cycled through when there are more slices than colors; shadcn only defines
 // five theme-aware chart colors out of the box.
@@ -24,7 +25,7 @@ export interface PercentageSlice {
 interface PercentagePieChartProps {
   title: string;
   slices: PercentageSlice[];
-  emptyMessage: string;
+  emptyMessage?: string;
 }
 
 export const PercentagePieChart = ({ title, slices, emptyMessage }: PercentagePieChartProps) => {
@@ -77,7 +78,7 @@ export const PercentagePieChart = ({ title, slices, emptyMessage }: PercentagePi
                 <li key={slice.key} className="flex min-w-0 flex-col text-sm">
                   <div className="flex min-w-0 items-center gap-1.5">
                     <span
-                      className={`h-2.5 w-2.5 shrink-0 rounded-[2px] ${SWATCH_CLASSES[index % SWATCH_CLASSES.length]}`}
+                      className={cn("h-2.5 w-2.5 shrink-0 rounded-[2px]", SWATCH_CLASSES[index % SWATCH_CLASSES.length])}
                     />
                     <span className="truncate">{slice.label}</span>
                   </div>
