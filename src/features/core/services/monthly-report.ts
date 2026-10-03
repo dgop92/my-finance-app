@@ -104,7 +104,7 @@ export function computeMonthlyReport({ entries, expenses, accounts, settings, mo
       (entry) =>
         entry.type === "debit" &&
         savingAccountIds.has(entry.accountId) &&
-        entry.amount >= savingAccountDepositThreshold &&
+        entry.amount < savingAccountDepositThreshold &&
         isInMonth(entry.date, month)
     )
     .reduce((sum, entry) => sum + entry.amount, 0);

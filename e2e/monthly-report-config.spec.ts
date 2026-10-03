@@ -51,7 +51,7 @@ test("edits a month's report inputs, saves them, and reloads them when the month
   // Defaults: global net salary, no manual income, 1.000.000 threshold, interest enabled.
   await expect(page.getByLabel("Net salary override (COP)")).toHaveValue("");
   await expect(page.getByLabel("Other income (COP)")).toHaveValue("0");
-  await expect(page.getByLabel("Savings deposit threshold (COP)")).toHaveValue("1000000");
+  await expect(page.getByLabel("Max interest deposit (COP)")).toHaveValue("1000000");
   await expect(page.getByRole("switch", { name: "Automatic interest" })).toBeChecked();
   // Total saved: 1.000.000. Unknown expenses: 5.000.000 + 0 - 0 - 1.000.000 = 4.000.000.
   await expect(statTile(page, "Total Saved").locator("span")).toHaveText(formatCurrency(1000000));

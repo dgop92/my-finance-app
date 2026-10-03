@@ -65,7 +65,7 @@ export const MonthlyReportConfigForm = ({
         )}
       </div>
       <div className="grid content-start gap-1.5">
-        <Label htmlFor="saving-deposit-threshold">Savings deposit threshold (COP)</Label>
+        <Label htmlFor="saving-deposit-threshold">Max interest deposit (COP)</Label>
         <Input
           id="saving-deposit-threshold"
           type="number"
