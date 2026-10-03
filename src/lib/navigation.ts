@@ -1,6 +1,7 @@
 import {
   ArrowLeftRight,
   BarChart3,
+  CalendarRange,
   DatabaseBackup,
   LayoutDashboard,
   ListChecks,
@@ -51,6 +52,11 @@ export const navigationItems: NavigationItem[] = [
     name: "Analytics",
     path: PATHS.ANALYTICS,
     icon: BarChart3,
+  },
+  {
+    name: "Monthly Report",
+    path: PATHS.MONTHLY_REPORT,
+    icon: CalendarRange,
   },
   {
     name: "Settings",
