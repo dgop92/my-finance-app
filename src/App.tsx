@@ -9,6 +9,7 @@ import { ExpensesPage } from "@/features/expenses/pages/expenses-page";
 import { BatchModePage } from "@/features/batch-mode/pages/batch-mode-page";
 import { DataTransferPage } from "@/features/data-transfer/pages/data-transfer-page";
 import { AnalyticsPage } from "@/features/analytics/pages/analytics-page";
+import { MonthlyReportPage } from "@/features/monthly-report/pages/monthly-report-page";
 import { SettingsPage } from "@/features/settings/pages/settings-page";
 import { PATHS } from "@/lib/paths";
 
@@ -27,6 +28,7 @@ function App() {
             <Route path={PATHS.BATCH_MODE} element={<BatchModePage />} />
             <Route path={PATHS.DATA_TRANSFER} element={<DataTransferPage />} />
             <Route path={PATHS.ANALYTICS} element={<AnalyticsPage />} />
+            <Route path={PATHS.MONTHLY_REPORT} element={<MonthlyReportPage />} />
             <Route path={PATHS.SETTINGS} element={<SettingsPage />} />
             <Route path="*" element={<NotFound />} />
           </Route>
