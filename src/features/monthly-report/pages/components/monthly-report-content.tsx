@@ -55,6 +55,7 @@ export const MonthlyReportContent = ({ month, monthKey, ...data }: MonthlyReport
           title={hasUnexplainedIncome ? "Unexplained Income" : "Unknown Expenses"}
           value={formatCurrency(Math.abs(report.unknownExpenses))}
         />
+        <StatTile title="Total Spent" value={formatCurrency(report.totalSpent)} />
       </div>
 
       {hasUnexplainedIncome && (
