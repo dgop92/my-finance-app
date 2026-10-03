@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { accountRepository } from "@/features/accounts/repositories/repository.factory";
 import { ledgerEntryRepository } from "@/features/ledger-entries/repositories/repository.factory";
 import { expenseRepository } from "@/features/expenses/repositories/repository.factory";
+import { monthlyReportConfigRepository } from "@/features/monthly-report/repositories/repository.factory";
 import { settingsRepository } from "@/features/settings/repositories/repository.factory";
 import { importLedgerData } from "@/features/data-transfer/services/ledger-data-transfer";
 
@@ -30,6 +31,7 @@ export const useImportLedgerData = () => {
         ledgerEntryRepository,
         expenseRepository,
         settingsRepository,
+        monthlyReportConfigRepository,
       });
     },
     onSuccess: async () => {
@@ -37,6 +39,7 @@ export const useImportLedgerData = () => {
       await queryClient.invalidateQueries({ queryKey: ["ledgerEntries"] });
       await queryClient.invalidateQueries({ queryKey: ["expenses"] });
       await queryClient.invalidateQueries({ queryKey: ["settings"] });
+      await queryClient.invalidateQueries({ queryKey: ["monthlyReportConfig"] });
     },
   });
 

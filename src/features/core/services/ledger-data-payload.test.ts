@@ -49,8 +49,63 @@ describe("parseLedgerDataPayload", () => {
     expect(parsed.settings).toEqual({ netSalary: 0 });
   });
 
+  it("parses monthly report configs, applying field defaults", () => {
+    const parsed = parseLedgerDataPayload({
+      accounts: [],
+      ledgerEntries: [],
+      expenses: [],
+      settings: { netSalary: 0 },
+      monthlyReportConfigs: [{ monthKey: "2026-09", netSalaryOverride: 6_000_000 }],
+    });
+
+    expect(parsed.monthlyReportConfigs).toEqual([
+      {
+        monthKey: "2026-09",
+        netSalaryOverride: 6_000_000,
+        manualOtherIncome: 0,
+        savingAccountDepositThreshold: 1_000_000,
+        automaticInterestEnabled: true,
+      },
+    ]);
+  });
+
+  it("treats a payload without monthly report configs as having none", () => {
+    const parsed = parseLedgerDataPayload({
+      accounts: [],
+      ledgerEntries: [],
+      expenses: [],
+      settings: { netSalary: 0 },
+    });
+
+    expect(parsed.monthlyReportConfigs).toEqual([]);
+  });
+
   it.each([
     ["null", null],
+    [
+      "non-array monthlyReportConfigs",
+      { accounts: [], ledgerEntries: [], expenses: [], settings: { netSalary: 1 }, monthlyReportConfigs: "nope" },
+    ],
+    [
+      "a monthly report config with a negative manualOtherIncome",
+      {
+        accounts: [],
+        ledgerEntries: [],
+        expenses: [],
+        settings: { netSalary: 1 },
+        monthlyReportConfigs: [{ monthKey: "2026-09", manualOtherIncome: -1 }],
+      },
+    ],
+    [
+      "a monthly report config with a malformed monthKey",
+      {
+        accounts: [],
+        ledgerEntries: [],
+        expenses: [],
+        settings: { netSalary: 1 },
+        monthlyReportConfigs: [{ monthKey: "2026-9" }],
+      },
+    ],
     ["a string", "not-an-object"],
     ["missing accounts", { ledgerEntries: [], expenses: [], settings: { netSalary: 1 } }],
     ["missing ledgerEntries", { accounts: [], expenses: [], settings: { netSalary: 1 } }],
@@ -87,7 +142,13 @@ describe("parseLedgerDataPayload", () => {
 
 describe("serializeLedgerDataPayload", () => {
   it("round-trips through JSON", () => {
-    const payload = { accounts: [], ledgerEntries: [], expenses: [], settings: { netSalary: 0 } };
+    const payload = {
+      accounts: [],
+      ledgerEntries: [],
+      expenses: [],
+      settings: { netSalary: 0 },
+      monthlyReportConfigs: [],
+    };
     expect(JSON.parse(serializeLedgerDataPayload(payload))).toEqual(payload);
   });
 });

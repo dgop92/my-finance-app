@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listClosedMonths } from "./closed-months";
+import { listClosedMonths, monthKey } from "./closed-months";
 
 describe("listClosedMonths", () => {
   it("lists months from the oldest data month up to the month before now, newest first", () => {
@@ -39,5 +39,13 @@ describe("listClosedMonths", () => {
 
   it("falls back to only the previous month when all data is in the current month", () => {
     expect(listClosedMonths(new Date(2026, 9, 15), new Date(2026, 9, 2))).toEqual([{ year: 2026, month: 8 }]);
+  });
+});
+
+describe("monthKey", () => {
+  it("formats a month as YYYY-MM with a one-based, zero-padded month", () => {
+    expect(monthKey({ year: 2026, month: 8 })).toBe("2026-09");
+    expect(monthKey({ year: 2026, month: 0 })).toBe("2026-01");
+    expect(monthKey({ year: 2025, month: 11 })).toBe("2025-12");
   });
 });

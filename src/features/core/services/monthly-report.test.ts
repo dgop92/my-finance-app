@@ -3,7 +3,8 @@ import { Account } from "../entities/account";
 import { Expense } from "../entities/expense";
 import { LedgerEntry } from "../entities/ledger-entry";
 import { Settings } from "../entities/settings";
-import { computeMonthlyReport, INTEREST_THRESHOLD, MonthlyReportInput } from "./monthly-report";
+import { DEFAULT_SAVING_ACCOUNT_DEPOSIT_THRESHOLD as INTEREST_THRESHOLD } from "../entities/monthly-report-config";
+import { computeMonthlyReport, MonthlyReportInput } from "./monthly-report";
 
 function makeEntry(overrides: Partial<LedgerEntry>): LedgerEntry {
   return {
@@ -177,20 +178,21 @@ describe("computeMonthlyReport", () => {
     const savings = makeAccount({ id: "savings", isSavingAccount: true });
     const checking = makeAccount({ id: "checking", isSavingAccount: false });
 
-    it("counts debit entries on savings accounts in the selected month at or above the threshold", () => {
+    it("counts small debit entries on savings accounts in the selected month and ignores large transfers", () => {
       const entries = [
-        makeEntry({ accountId: "savings", type: "debit", amount: INTEREST_THRESHOLD, date: new Date(2026, 8, 10) }),
-        makeEntry({ accountId: "savings", type: "debit", amount: 2_500_000, date: new Date(2026, 8, 20) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 100_000, date: new Date(2026, 8, 4) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: INTEREST_THRESHOLD - 1, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 2_000_000, date: new Date(2026, 8, 14) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings, checking] }));
 
-      expect(result.interestFromSavings).toBe(3_500_000);
+      expect(result.interestFromSavings).toBe(100_000 + INTEREST_THRESHOLD - 1);
     });
 
-    it("ignores debit entries below the threshold", () => {
+    it("ignores debit entries at or above the threshold", () => {
       const entries = [
-        makeEntry({ accountId: "savings", type: "debit", amount: INTEREST_THRESHOLD - 1, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: INTEREST_THRESHOLD, date: new Date(2026, 8, 10) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings] }));
@@ -198,9 +200,9 @@ describe("computeMonthlyReport", () => {
       expect(result.interestFromSavings).toBe(0);
     });
 
-    it("ignores credit entries even when large and on a savings account", () => {
+    it("ignores credit entries on a savings account", () => {
       const entries = [
-        makeEntry({ accountId: "savings", type: "credit", amount: 5_000_000, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "savings", type: "credit", amount: 100_000, date: new Date(2026, 8, 10) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings] }));
@@ -210,7 +212,7 @@ describe("computeMonthlyReport", () => {
 
     it("ignores entries on accounts that are not savings accounts", () => {
       const entries = [
-        makeEntry({ accountId: "checking", type: "debit", amount: 5_000_000, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "checking", type: "debit", amount: 100_000, date: new Date(2026, 8, 10) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [checking] }));
@@ -220,8 +222,8 @@ describe("computeMonthlyReport", () => {
 
     it("ignores entries outside the selected month, including the previous month", () => {
       const entries = [
-        makeEntry({ accountId: "savings", type: "debit", amount: 2_000_000, date: new Date(2026, 7, 31, 23, 59) }),
-        makeEntry({ accountId: "savings", type: "debit", amount: 3_000_000, date: new Date(2026, 9, 1) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 100_000, date: new Date(2026, 7, 31, 23, 59) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 200_000, date: new Date(2026, 9, 1) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings] }));
@@ -231,12 +233,58 @@ describe("computeMonthlyReport", () => {
 
     it("sets other income to interest from savings plus zero manual income", () => {
       const entries = [
-        makeEntry({ accountId: "savings", type: "debit", amount: 2_000_000, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 100_000, date: new Date(2026, 8, 10) }),
       ];
 
       const result = computeMonthlyReport(makeInput({ entries, accounts: [savings] }));
 
-      expect(result.otherIncome).toBe(2_000_000);
+      expect(result.otherIncome).toBe(100_000);
+    });
+  });
+
+  describe("per-month config", () => {
+    const savings = makeAccount({ id: "savings", isSavingAccount: true });
+    const deposit = (amount: number) =>
+      makeEntry({ accountId: "savings", type: "debit", amount, date: new Date(2026, 8, 10) });
+
+    it("uses the net salary override instead of the settings net salary", () => {
+      const result = computeMonthlyReport(makeInput({ config: { netSalaryOverride: 6_500_000 } }));
+
+      expect(result.netSalary).toBe(6_500_000);
+    });
+
+    it("adds manual other income on top of interest", () => {
+      const result = computeMonthlyReport(
+        makeInput({ entries: [deposit(100_000)], accounts: [savings], config: { manualOtherIncome: 300_000 } })
+      );
+
+      expect(result.interestFromSavings).toBe(100_000);
+      expect(result.otherIncome).toBe(400_000);
+    });
+
+    it("counts only deposits below a custom threshold as interest", () => {
+      const result = computeMonthlyReport(
+        makeInput({
+          entries: [deposit(300_000), deposit(600_000)],
+          accounts: [savings],
+          config: { savingAccountDepositThreshold: 500_000 },
+        })
+      );
+
+      expect(result.interestFromSavings).toBe(300_000);
+    });
+
+    it("ignores savings deposits when automatic interest is disabled but keeps manual income", () => {
+      const result = computeMonthlyReport(
+        makeInput({
+          entries: [deposit(100_000)],
+          accounts: [savings],
+          config: { automaticInterestEnabled: false, manualOtherIncome: 300_000 },
+        })
+      );
+
+      expect(result.interestFromSavings).toBe(0);
+      expect(result.otherIncome).toBe(300_000);
     });
   });
 
@@ -244,14 +292,14 @@ describe("computeMonthlyReport", () => {
     it("computes unknown expenses as net salary + other income - known expenses - total saved", () => {
       const savings = makeAccount({ id: "savings", isSavingAccount: true });
       const entries = [
-        makeEntry({ accountId: "savings", type: "debit", amount: 2_000_000, date: new Date(2026, 8, 10) }),
+        makeEntry({ accountId: "savings", type: "debit", amount: 500_000, date: new Date(2026, 8, 10) }),
         makeEntry({ accountId: "account-1", type: "debit", amount: 1_000_000, date: new Date(2026, 8, 11) }),
       ];
       const expenses = [makeExpense({ amount: 1_500_000, date: new Date(2026, 7, 10) })];
 
       const result = computeMonthlyReport(makeInput({ entries, expenses, accounts: [makeAccount({}), savings] }));
 
-      // 5_000_000 + 2_000_000 - 1_500_000 - 3_000_000
+      // 5_000_000 + 500_000 - 1_500_000 - 1_500_000
       expect(result.unknownExpenses).toBe(2_500_000);
     });
 

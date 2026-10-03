@@ -24,5 +24,5 @@ export function formatReportMonth(month: ReportMonth): string {
 }
 
 export function monthKey(month: ReportMonth): string {
-  return `${month.year}-${month.month}`;
+  return `${month.year}-${String(month.month + 1).padStart(2, "0")}`;
 }
